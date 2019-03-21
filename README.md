@@ -1,2 +1,3 @@
 # black-jack
-# Recommended Editor: SUblime Text 3
+# Recommended Editor: Sublime Text 3
+# Black Jack server for educational purposes
