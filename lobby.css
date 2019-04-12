@@ -1,11 +1,33 @@
-body{
+
+body {
   height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+  background-image: url("http://cheerspokernh.com/wp-content/uploads/2018/02/bigstock-poker-table-background-26587844-2-1.jpg");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+  background-size: cover;
 }
 
-#content-row {
-  height: 80%;
+h1,h3 {
+  color: white;
 }
+
+li {
+  color: white;
+}
+#content-row { height: 70%; }
 
 #gamerooms_container {
   padding: 15px;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.6);
+
+}
+#gamesroom_bg {
+  background:silver;
+  opacity: 0.5;
+}
+
+#spacer {
+  height: 10%;
 }

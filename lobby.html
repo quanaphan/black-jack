@@ -2,7 +2,7 @@
 <html>
   <head>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+  <link rel="stylesheet" href="/lobby.css" type="text/css">
   </head>
 
   <body>
@@ -20,6 +20,7 @@
 
              <div class="row" id="content-row">
                  <div class="col-8" id="gamerooms_container" style="height: 100%">
+                 <div class="gamesroom_bg"></div>
                      <ul id="gamerooms" class="list-group overflow-auto mh-100 d-flex flex-column">
                        <li>gameroom 1</li>
                        <li>gameroom 2</li>
@@ -32,14 +33,15 @@
                        $4000
                        </h1>
                      </div>
-                     <div id="help_container">
-                     <button id="Help">
+                     <div id="spacer"></div>
+                     <div class="col-1" id="help_container">
+                     <button type="button" class="btn btn-info" id="help">
                      Help
                      </button>
                      </div>
-
-                     <div id="logout_container">
-                     <button id="Help">
+                     <div id="spacer"></div>
+                     <div class="col-1" id="logout_container">
+                     <button type="button" class="btn btn-danger" id="logout">
                      Logout
                      </button>
                      </div>
@@ -48,13 +50,13 @@
              </div>
 
              <div class="row fixed-bottom">
-               <div class="col-4">
-                 <button>
+               <div class="col-2">
+                 <button type="button" class="btn btn-success">
                  Host New Game
                  </button>
                </div>
-               <div class="col-4">
-                 <button>
+               <div class="col-1">
+                 <button type="button" class="btn btn-info">
                  Refresh
                  </button>
                </div>
