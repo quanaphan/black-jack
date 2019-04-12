@@ -139,15 +139,72 @@
 #dealer .card {
     animation: deal-dealer .5s linear;
 }
-#user1 .card {
+#player1 .card {
     animation: deal-player1 .5s linear;
 }
 
-#user2 .card {
+#player2 .card {
     animation: deal-player2 .5s linear;
 }
 
 
 #main-user .card {
     animation: deal-player .5s linear;
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
+
+    @keyframes deal-player {
+        0% {
+            transform: translate(-75px, -150px);
+        }
+        50% {
+            transform: translate(-30px, -50px);
+        }
+
+        100% {
+            transform: translate(0, 0);
+        }
+    }
+
+    @keyframes deal-dealer {
+        0% {
+            transform: translate(-100px, 0px);
+        }
+        50% {
+            transform: translate(-30px, 0px);
+        }
+
+        100% {
+            transform: translate(0, 0);
+        }
+    }
+
+    @keyframes deal-player1 {
+        0% {
+            transform: translate(50px, -150px);
+        }
+        50% {
+            transform: translate(25px, -20px);
+        }
+
+        100% {
+            transform: translate(0, 0);
+        }
+    }
+
+
+    @keyframes deal-player2 {
+        0% {
+            transform: translate(-200px, -150px);
+        }
+        50% {
+            transform: translate(-50px, -30px);
+        }
+
+        100% {
+            transform: translate(0, 0);
+        }
+    }
+
 }
