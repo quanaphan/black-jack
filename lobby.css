@@ -28,6 +28,11 @@ li {
   opacity: 0.5;
 }
 
+#leaderboard_container{
+  padding: 15px;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.6);
+}
 #spacer {
   height: 10%;
 }
