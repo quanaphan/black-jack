@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Blackjack</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- JQuery & Bootstrap4 -->
+
     <script
             src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -17,8 +18,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <link rel="stylesheet" href="gameStyle.css">
     <script src="cards.js"></script>
+    <script src="gameRoomEvents.js"></script>
     <link rel="stylesheet" href="keyframes.css">
 
 </head>
@@ -157,255 +160,6 @@
 <script>
 
 
-    let playerTurn;
-    let currentTurn = 1;
-
-    let mainPlayerArea = $("#main-user");
-    let dealerPlayerArea = $("#dealer");
-    let player1Area = $("#player1");
-    let player2Area = $("#player2");
-    let deckPile = $("#deck-pile");
-
-    let mainPlayerHand = [];
-    let dealerHand = [];
-    let player1Hand = [];
-    let player2Hand = [];
-
-    let dealerTotal = 0;
-    let mainPlayerTotal = 0;
-    let player1Total = 0;
-    let player2Total = 0;
-
-
-    /**
-     * Name: dealCard
-     * deals a single card to a specified location, it its the dealer second card then it is dealt face down
-     * @param hand: the array that the player that will receive the card has there other cards stored in
-     * @param location: The location on the board to deal the card, "#dealer" is the dealer on top, #main-user is the user at the center of the screen,#user1 is the user on the left
-     *                  #user2 is the user on the right
-     */
-    function dealCard(hand, location) {
-        let cardDrawn = cards.pop();
-        hand.push(cardDrawn);
-        let index = hand.length - 1;
-
-
-        if (currentTurn === 1) {
-            playerTurn = "dealer";
-        } else if (currentTurn === 2) {
-            playerTurn = "main-user";
-        } else if (currentTurn === 3) {
-            playerTurn = "player1";
-        } else if (currentTurn === 4) {
-            playerTurn = "player2";
-        }
-
-        // Create card image for card, hide initially so it doesn't impact transition
-        let cardImage = $("<img>").attr("class", "card").attr("src", "img/" + hand[index].src).hide();
-        cardImage.attr("id", playerTurn + "-card-" + index);
-
-
-        // To create stacked card effect
-        if (index === 0) {
-            cardImage.appendTo($(location)).show();
-
-        } else if (index > 0) {
-
-            if (location === dealerPlayerArea && index === 1) {
-                cardImage.attr("src", "img/card_back.png");
-
-            }
-            let screenWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-            console.log(screenWidth);
-            if (screenWidth < 360) {
-                cardImage.appendTo($(location)).offset({left: -35}).css("margin-right", -60).show();
-            }else if(screenWidth < 350){
-                console.log("here")
-                cardImage.appendTo($(location)).offset({left: -45}).css("margin-right", -60).show();
-            }
-            else {
-                cardImage.appendTo($(location)).offset({left: -60}).css("margin-right", -60).show();
-            }
-        }
-
-    }
-
-    /**
-     * Name: initialDeal
-     * Deals all the cards at the beginning of each turn including delays. May need to be modified based on how the current turn is implemented in final version
-     * @param numPlayers: The number of players in the game not including dealer
-     */
-    function initialDeal(numPlayers) {
-
-        if (numPlayers === 1) {
-            setTimeout(function () {
-
-                dealCard(dealerHand, dealerPlayerArea);
-                currentTurn++;
-            }, 500);
-            setTimeout(function () {
-                $("#main-user-placeholder").remove();
-                dealCard(mainPlayerHand, mainPlayerArea);
-                currentTurn++;
-            }, 1000);
-            setTimeout(function () {
-                dealCard(dealerHand, dealerPlayerArea);
-                currentTurn++;
-            }, 1500);
-            setTimeout(function () {
-                dealCard(mainPlayerHand, mainPlayerArea);
-                currentTurn++;
-            }, 2000);
-
-        } else if (numPlayers === 2) {
-            setTimeout(function () {
-
-                dealCard(dealerHand, dealerPlayerArea);
-                currentTurn++;
-            }, 500);
-            setTimeout(function () {
-                $("#main-user-placeholder").remove();
-                dealCard(mainPlayerHand, mainPlayerArea);
-                currentTurn++;
-            }, 1000);
-            setTimeout(function () {
-                $("#player1-placeholder").remove();
-                dealCard(player1Hand, player1Area);
-                currentTurn1;
-            }, 1500);
-            setTimeout(function () {
-                dealCard(dealerHand, dealerPlayerArea);
-                currentTurn++;
-            }, 2000);
-            setTimeout(function () {
-                dealCard(mainPlayerHand, mainPlayerArea);
-                currentTurn++;
-            }, 2500);
-            setTimeout(function () {
-                dealCard(player1Hand, player1Area);
-                currentTurn = 2;
-            }, 3000);
-
-        } else if (numPlayers === 3) {
-            setTimeout(function () {
-
-                dealCard(dealerHand, dealerPlayerArea);
-                currentTurn++;
-            }, 500);
-            setTimeout(function () {
-                $("#player1-placeholder").remove();
-                dealCard(player1Hand, player1Area);
-                currentTurn++;
-            }, 1500);
-            setTimeout(function () {
-                $("#main-user-placeholder").remove();
-                dealCard(mainPlayerHand, mainPlayerArea);
-                currentTurn++;
-            }, 2000);
-            setTimeout(function () {
-                $("#player2-placeholder").remove();
-                dealCard(player2Hand, player2Area);
-                currentTurn = 1;
-            }, 2500);
-            setTimeout(function () {
-                dealCard(dealerHand, dealerPlayerArea);
-                currentTurn++;
-            }, 3000);
-            setTimeout(function () {
-                dealCard(player1Hand, player1Area);
-                currentTurn++;
-            }, 3500);
-            setTimeout(function () {
-                dealCard(mainPlayerHand, mainPlayerArea);
-                currentTurn++;
-            }, 4000);
-            setTimeout(function () {
-                dealCard(player2Hand, player2Area);
-                currentTurn = 1;
-            }, 4500);
-        }
-    }
-
-
-    /**
-     * calculateHandTotals
-     *
-     * calculates the the total value fo a hand: need ace logic
-     *
-     * */
-
-    function calculateHandTotals(hand) {
-        let sum = 0;
-
-        for (let i = 0; i < hand.length; i++) {
-            sum += hand[i].value;
-        }
-        return sum;
-    }
-
-    /**
-     * displayHandTotals
-     *
-     * displays each hand total for each user. Needs logic for less than 3 players.
-     * Displays both popover and html elemetn will remove the one that looks worse.
-     *
-     * */
-
-    function displayHandTotals() {
-        dealerTotal = calculateHandTotals(dealerHand);
-        mainPlayerTotal = calculateHandTotals(mainPlayerHand);
-        player1Total = calculateHandTotals(player1Hand);
-        player2Total = calculateHandTotals(player2Hand);
-
-        $("#dealer-total").text(dealerTotal);
-        $("#player1-total").text(player1Total);
-        $("#main-user-total").text(mainPlayerTotal);
-        $("#player2-total").text(player2Total);
-        /*
-                dealerPlayerArea.popover({
-                    title: "Dealer Total",
-                    content: dealerTotal,
-                    trigger: "hover",
-                    placement: "bottom",
-                    animation: true
-                }).popover('show');;
-                mainPlayerArea.popover({
-                    title: "Player Total",
-                    content: mainPlayerTotal,
-                    trigger: "hover",
-                    placement: "bottom",
-                    animation: true
-                }).popover('show');;
-                player1Area.popover({
-                    title: "Player1 Total",
-                    content: player1Total,
-                    trigger: "hover",
-                    placement: "bottom",
-                    animation: true
-                }).popover('show');;
-                player2Area.popover({
-                    title: "Player2 Total",
-                    content: player2Total,
-                    trigger: "hover",
-                    placement: "bottom",
-                    animation: true
-                }).popover('show');
-                */
-    }
-
-    /**
-     * flipHiddenCard
-     * Flips the dealer second card. Will need to be modified to flip when all player have either hit 21, busted or all selected stand, currently its based on timing.
-     *
-     */
-    function flipHiddenCard() {
-        setTimeout(function () {
-            if (dealerHand.length === 2) {
-                $("#dealer-card-1").addClass("flipped");
-                $("#dealer-card-1").attr("src", "img/" + dealerHand[1].src);
-            }
-        }, 5000);
-    }
 
     $(document).ready(function () {
         let waitTime = 5000;
