@@ -1,0 +1,11 @@
+body{
+  height: 100vh;
+}
+
+#content-row {
+  height: 80%;
+}
+
+#gamerooms_container {
+  padding: 15px;
+}
