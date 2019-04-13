@@ -21,6 +21,7 @@ let player2Total = 0;
  *                  #player2 is the user on the right
  */
 function dealCard(hand, location) {
+    let dealerPlayerArea = $("#dealer");
     let cardDrawn = cards.pop();
     hand.push(cardDrawn);
     let index = hand.length - 1;
@@ -47,7 +48,7 @@ function dealCard(hand, location) {
 
     } else if (index > 0) {
 
-        if (location === $("#dealer") && index === 1) {
+        if (location.id === dealerPlayerArea.id && index === 1) {
             cardImage.attr("src", "img/card_back.png");
 
         }
@@ -55,11 +56,10 @@ function dealCard(hand, location) {
 
         if (screenWidth < 360) {
             cardImage.appendTo($(location)).offset({left: -35}).css("margin-right", -60).show();
-        }else if(screenWidth < 350){
+        } else if (screenWidth < 350) {
 
             cardImage.appendTo($(location)).offset({left: -45}).css("margin-right", -60).show();
-        }
-        else {
+        } else {
             cardImage.appendTo($(location)).offset({left: -60}).css("margin-right", -60).show();
         }
     }
