@@ -247,3 +247,53 @@ function flipHiddenCard() {
         }
     }, 5000);
 }
+
+function enableButton(buttonName) {
+
+    $(buttonName).removeClass("disabled-button");
+}
+
+function disableButton(buttonName) {
+    $(buttonName).off();
+    $(buttonName).addClass("disabled-button");
+}
+
+/**
+ * Returns boolean value if the hand contains an ace
+ * @param hand
+ * @returns {boolean}
+ */
+
+function hasAce(hand) {
+
+    for (let i = 0; i < hand.length; i++) {
+        if (hand[i].name === "ace") {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+/**
+ * finds the aces in the hand that has not already been reduced and sets its value to 1
+ * returns the new total of the hand
+ * @param hand
+ * @returns {number}
+ */
+function reduceAceValue(hand) {
+    let total = calculateHandTotals(hand);
+
+    if (hasAce(hand) && total > 21) {
+        for (let i = 0; i < hand.length; i++) {
+            if (hand[i].name === "ace" && hand[i].value === 11) {
+                hand[i] = 1;
+                total -= 10;
+                return total;
+            }
+        }
+
+    }
+}
+
+
