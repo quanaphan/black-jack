@@ -38,6 +38,8 @@ var session_capacity = 4;
 const cap_increment = 4;
 const lobby = io.of('/lobby');
 const game = io.of('/game');
+const login = io.of('/login');
+const account = io.of('/account');
 /**
  * Utitlities for game_sessions
  */
@@ -85,6 +87,17 @@ var avail_session = function(){
   session_capacity += cap_increment;
   return id;
 }
+
+var create_session = function(id, title, username){
+  game_sessions[id]['host'] = username;
+  game_sessions[id]['title'] = title;
+  game_sessions[id]['player']['p1'] = username;
+  game_sessions[id]['active'] = true;
+  game_sessions[id]['capacity'] = 1;
+  game_sessions[id]['deck'] = Object.clone(cards);
+}
+    
+
 /**
  * Utitlities for player_sessions
  */
@@ -92,87 +105,153 @@ var avail_session = function(){
  * Create a new user under requested name
  * return true on success, return false on failure
  */
-var create_user = function(name){
-  if(player_sessions.hasOwnProperty(name)){
-    if(player_sessions[name]['expire']){
-      reset_player(name);
-      return true;//success
-    }else{
-      return false;//fail
-    }
-  }else{
-    player_sessions[name] = {};
-    player_sessions[name]['name'] = name;
-    player_sessions[name]['balance'] = 100;
-    player_sessions[name]['expire'] = false;
-    return true;//success
-  }
+var load_user = function(key){
+  player_sessions[key] = {};
+  player_sessions[key]['name'] = name;// load nickname from DB
+  player_sessions[key]['balance'] = 100;// load from DB
+  player_sessions[key]['id'] = key;
 }
-
-/**
- * Reset session
- */
-var reset_player = function(key){
-    player_sessions['key']['name'] = key;
-    player_sessions['key']['balance'] = 100;
-}
-
-
-
-
 
 //init game session, starts from 1
 populate_game_sessions(1, session_capacity);
 
+/**
+ * Login socket logics
+ */
+login.on('connection', function(socket){
+  console.log(socket.id + 'connected')
+  // if has cookies
+  if(socket.handshake.headers.cookie){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        //add to player list & redirect
+        load_user(socket_cookie['username']) = {};
+        // redirect to lobby
+        socket.emit('login success');
+      }
+    }
+  }
 
-
+  socket.on('login', function(username, password){
+    var authorize = false;//call function to authorize access
+    if (authorize){
+      // success, load user from DB and emit success msg
+      load_user(username);
+      socket.emit('login success');
+    } else{
+      // failed, emit failure msg
+      socket.emit('login failure');
+    }
+  })
+})
 
 /**
  * Lobby socket logics
  */
 lobby.on('connection', function(socket){
+  //should have credentials
+  var username = '';
+  if(socket.handshake.headers.cookie){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        username = socket_cookie['username'];
+      }else{
+        //redirect back to login
+      }
+    }else{
+      //redirect back to login
+    }
+  }else{
+    //redirect back to login
+  }
+
+  //TODO get nickname here
+
   console.log('connected');
   var connected_session = -1;
   //send out game lobby list
-  socket.emit('lobby_update', JSON.stringify(game_sessions));
+  socket.emit('lobby update', JSON.stringify(game_sessions));
+  //need leaderboard stuffs here
 
   //requesting a lobby list refresh
   socket.on('refresh', function(){
-    socket.emit('lobby_update', JSON.stringify(game_sessions));
+    socket.emit('lobby update', JSON.stringify(game_sessions));
   })
 
+  //request to create a room
   socket.on('create room', function(title){
     var id = avail_session();
-    //TODO - link socket ID to player session?
     //Fill metadata
-    game_sessions[id]['host'] = socket.id;//change to playerid instead
+    game_sessions[id]['host'] = username;
     game_sessions[id]['title'] = title;
-    game_sessions[id]['player']['p1'] = socket.id;
+    game_sessions[id]['player']['p1'] = username;
     game_sessions[id]['active'] = true;
     game_sessions[id]['capacity'] = 1;
-    socket.join(id);
-    // send ack
+    game_sessions[id]['deck'] = Object.clone(cards);
+    // send ack, refresh lobby list
     socket.emit('create success', id);
+    lobby.emit('lobby update', JSON.stringify(game_sessions));
   })
 
   //requesting to join a room
-  socket.on('join room', function(id, player){//might need to change signature
+  socket.on('join room', function(id){
     //check if room is not full
     if(game_sessions[id]['capacity'] != max_session_capacity){
+      //increase capacity
       game_sessions[id]['capacity'] += 1;
       var p = "p" + game_sessions[id]['capacity'];
-      //game_sessions[id]['player'][p] =;
+      game_sessions[id]['player'][p] = username;
+      //send ack, refresh lobby list
+      socket.emit('join success', id)
+      lobby.emit('lobby update', JSON.stringify(game_sessions));
+    }else{
+      //room is full
+      socket.emit('join fail');
     }
+  })
 
-    socket.emit('')
+  socket.on('leave room', function(){
+    // do something
   })
 
   socket.on('disconenct', function(){
+    // do something
     console.log('disconnect');
   })
 })
+/**
+ * Game session logic
+ */
+game.on('connection', function(socket){
+  var username = '';
+  var sessionID = -1;
+  if(socket.handshake.headers.cookie){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        username = socket_cookie['username'];
+        sessionID = socket_cookie['sessionID'];
+      }else{
+        //redirect back to login
+      }
+    }else{
+      //redirect back to login
+    }
+  }else{
+    //redirect back to login
+  }
+  // TODO - get nickname here
+  // Shuffle, x3 in total since 3 players expected
 
-
+})
 
 
 io.on('connection', function(socket){
@@ -196,11 +275,6 @@ io.on('connection', function(socket){
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-
-/**
- * Creates a new game session
- */
 
 
 
