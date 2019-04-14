@@ -88,15 +88,25 @@ var avail_session = function(){
   return id;
 }
 
+/**
+ * Create a game session
+ */
 var create_session = function(id, title, username){
   game_sessions[id]['host'] = username;
   game_sessions[id]['title'] = title;
-  game_sessions[id]['player']['p1'] = username;
+  game_sessions[id]['player'][username] = {};
+  game_sessions[id]['player'][username]['username'] = username;
   game_sessions[id]['active'] = true;
   game_sessions[id]['capacity'] = 1;
   game_sessions[id]['deck'] = Object.clone(cards);
 }
-    
+
+/**
+ * shuffle deck of given game session
+ */
+var shuffle_deck = function(id){
+  game_sessions[id]['deck'] = shuffle(game_sessions[id]['deck']);
+}    
 
 /**
  * Utitlities for player_sessions
@@ -107,9 +117,9 @@ var create_session = function(id, title, username){
  */
 var load_user = function(key){
   player_sessions[key] = {};
-  player_sessions[key]['name'] = name;// load nickname from DB
+  player_sessions[key]['nickname'] = name;// load nickname from DB
   player_sessions[key]['balance'] = 100;// load from DB
-  player_sessions[key]['id'] = key;
+  player_sessions[key]['username'] = key;
 }
 
 //init game session, starts from 1
@@ -188,12 +198,7 @@ lobby.on('connection', function(socket){
   socket.on('create room', function(title){
     var id = avail_session();
     //Fill metadata
-    game_sessions[id]['host'] = username;
-    game_sessions[id]['title'] = title;
-    game_sessions[id]['player']['p1'] = username;
-    game_sessions[id]['active'] = true;
-    game_sessions[id]['capacity'] = 1;
-    game_sessions[id]['deck'] = Object.clone(cards);
+    create_session(id,title,username);
     // send ack, refresh lobby list
     socket.emit('create success', id);
     lobby.emit('lobby update', JSON.stringify(game_sessions));
@@ -250,6 +255,37 @@ game.on('connection', function(socket){
   }
   // TODO - get nickname here
   // Shuffle, x3 in total since 3 players expected
+  shuffle_deck(sessionID);
+  var session = game_sessions[sessionID];
+  var channelname = "#" + sessionID;
+  // join game channel for broadcast
+  socket.join(channelname);
+  
+/**
+ * Gameflow:
+ * Deck shuffled
+ * Place bet & ready
+ * play
+ * distribute cards
+ * p1 turn
+ * p2 turn
+ * p3 turn
+ * dealer turn
+ */
+  socket.
+
+
+  // ready to start
+  socket.on('ready', function(){
+    game.to(channelname).emit('lock in', username);
+
+
+
+
+
+  })
+
+
 
 })
 
@@ -257,7 +293,6 @@ game.on('connection', function(socket){
 io.on('connection', function(socket){
   // On new socket connection
   socket.on('disconenct', function(){
-
   })
 })
 
