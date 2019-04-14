@@ -26,34 +26,99 @@ var server = http.createServer(app);
 var io = require('socket.io')(server);
 
 /**
- * Socket logics, only required for game sessions
+ * Socket logics
  */
-// Game session
+// config + init
 var game_sessions = {};
+//need a player list of sort here
 var cards = require('../utilities/cards');
+const max_session_capacity = 3;
+var session_capacity = 4;
+const cap_increment = 4;
+const lobby = io.of('/lobby');
+const game = io.of('/game');
+
+/**
+ * Populate game session from start to end
+ */
 var populate_game_sessions = function(start,end){
   for(i = start; i <= end; i++){
     var key = i;
     game_sessions[key] = {};
     game_sessions[key]['owner'] = "";
+    game_sessions[key]['title'] = "";
     game_sessions[key]['players'] = {};
     game_sessions[key]['active'] = false;
     game_sessions[key]['capacity'] = 0;
     game_sessions[key]['id'] = key;
   }
 }
-const lobby = io.of('/lobby');
-const game = io.of('/game');
+
+/**
+ * Get next avail game session
+ */
+var avail_session = function(){
+  for (var i = 1; i <= session_capacity; i++) {
+    if(!game_sessions[i]['active']){
+      //if game session is avail, return the session key/id
+      return i;
+    }
+  }
+  //fail to find an available session, all session busy
+  //creating new session
+  populate_game_sessions(session_capacity+1,session_capacity + cap_increment);
+  var id = session_capacity+1;
+  session_capacity += cap_increment;
+  return id;
+}
+
+//init game session, starts from 1
+populate_game_sessions(1, session_capacity);
+
+
+
 
 /**
  * Lobby socket logics
  */
 lobby.on('connection', function(socket)){
   console.log('connected');
+  var connected_session = -1;
   //send out game lobby list
   socket.emit('lobby_update', JSON.stringify(game_sessions));
+
+  //requesting a lobby list refresh
+  socket.on('refresh', function(){
+    socket.emit('lobby_update', JSON.stringify(game_sessions));
+  })
+
+  socket.on('create room', function(title)){
+    var id = avail_session();
+    //TODO - link socket ID to player session?
+    //Fill metadata
+    game_sessions[id]['owner'] = socket.id;
+    game_sessions[id]['title'] = title;
+    game_sessions[id]['player']['p1'] = socket.id;
+    game_sessions[id]['active'] = true;
+    game_sessions[id]['capacity'] = 1;
+    socket.join(id);
+    // send ack
+    socket.emit('create success', id);
+  }
+
+  //requesting to join a room
+  socket.on('join room', function(id, player){//might need to change signature
+    //check if room is not full
+    if(game_sessions[id]['capacity'] != max_session_capacity){
+      game_sessions[id]['capacity'] += 1;
+      game_sessions[id]['player']
+    }
+
+    socket.emit('')
+  })
+
   socket.on('disconenct', function(){
-    
+    console.log('disconnect');
   })
 }
 
