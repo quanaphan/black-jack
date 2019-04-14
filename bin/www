@@ -33,6 +33,7 @@ var game_sessions = {};
 var player_sessions = {};
 //need a player list of sort here
 var cards = require('../utilities/cards');
+var database = require('../database/db.js');
 const max_session_capacity = 3;
 var session_capacity = 4;
 const cap_increment = 4;
