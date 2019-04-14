@@ -1,7 +1,7 @@
-const app = require('express')();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
-const cookie = require('cookie');
+var app = require('express')();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var cookie = require('cookie');
 
 app.get('/', function(req, res){
     res.sendFile(__dirname +'/index.html')
@@ -232,5 +232,5 @@ io.on('connection', function(socket){
 })
 const port=process.env.PORT || 3000
 http.listen(port, function(){
-    console.log('listening on *:3000');
+    console.log('listening on *:8000');
 });

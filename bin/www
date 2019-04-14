@@ -1,0 +1,176 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('black-jack:server');
+var http = require('http');
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Create Socket.IO on server
+ */
+var io = require('socket.io')(server);
+
+/**
+ * Socket logics, only required for game sessions
+ */
+// Game session
+var game_sessions = {};
+var cards = require('../utilities/cards');
+var populate_game_sessions = function(start,end){
+  for(i = start; i <= end; i++){
+    var key = i;
+    game_sessions[key] = {};
+    game_sessions[key]['owner'] = "";
+    game_sessions[key]['players'] = {};
+    game_sessions[key]['active'] = false;
+    game_sessions[key]['capacity'] = 0;
+    game_sessions[key]['id'] = key;
+  }
+}
+const lobby = io.of('/lobby');
+const game = io.of('/game');
+
+/**
+ * Lobby socket logics
+ */
+lobby.on('connection', function(socket)){
+  console.log('connected');
+  //send out game lobby list
+  socket.emit('lobby_update', JSON.stringify(game_sessions));
+  socket.on('disconenct', function(){
+    
+  })
+}
+
+
+
+
+io.on('connection', function(socket){
+  // On new socket connection
+  socket.on('disconenct', function(){
+
+  })
+}
+
+
+
+
+
+
+
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+
+/**
+ * Creates a new game session
+ */
+
+
+
+/**
+ * Generate random alphanumeric
+ */
+function randomString(length){
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (var i = 0; i < length; i++) 
+    text += possible.charAt(Math.floor(Math.random()*possible.length));
+  return text;
+}
+
+/** Fisher-Yates shuffle algorithm
+ * Shuffles array in place.
+ * @param {Array} a items An array containing the items.
+ */
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
