@@ -130,7 +130,7 @@ populate_game_sessions(1, session_capacity);
 /**
  * Lobby socket logics
  */
-lobby.on('connection', function(socket)){
+lobby.on('connection', function(socket){
   console.log('connected');
   var connected_session = -1;
   //send out game lobby list
@@ -141,7 +141,7 @@ lobby.on('connection', function(socket)){
     socket.emit('lobby_update', JSON.stringify(game_sessions));
   })
 
-  socket.on('create room', function(title)){
+  socket.on('create room', function(title){
     var id = avail_session();
     //TODO - link socket ID to player session?
     //Fill metadata
@@ -153,7 +153,7 @@ lobby.on('connection', function(socket)){
     socket.join(id);
     // send ack
     socket.emit('create success', id);
-  }
+  })
 
   //requesting to join a room
   socket.on('join room', function(id, player){//might need to change signature
@@ -170,7 +170,7 @@ lobby.on('connection', function(socket)){
   socket.on('disconenct', function(){
     console.log('disconnect');
   })
-}
+})
 
 
 
@@ -180,7 +180,7 @@ io.on('connection', function(socket){
   socket.on('disconenct', function(){
 
   })
-}
+})
 
 
 
