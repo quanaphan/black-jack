@@ -102,7 +102,9 @@ var create_user = function(name){
     }
   }else{
     player_sessions[name] = {};
+    player_sessions[name]['name'] = name;
     player_sessions[name]['balance'] = 100;
+    player_sessions[name]['expire'] = false;
     return true;//success
   }
 }
@@ -111,6 +113,7 @@ var create_user = function(name){
  * Reset session
  */
 var reset_player = function(key){
+    player_sessions['key']['name'] = key;
     player_sessions['key']['balance'] = 100;
 }
 
