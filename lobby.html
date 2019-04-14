@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/lobby.css" type="text/css">
+  </head>
+
+  <body>
+    <div style="height: 100%; display: flex;">
+         <div class="container-fluid mw-100 mh-100">
+             <h1 class="display-4" id="Name-Display"></h1>
+             <div class="row">
+                 <div class="col-8">
+                     <h3>Game Rooms</h3>
+                 </div>
+                 <div class="col-4">
+                     <h1>Username</h1>
+                 </div>
+             </div>
+
+             <div class="row" id="content-row">
+                 <div class="col-8" id="gamerooms_container" style="height: 100%">
+                 <div class="gamesroom_bg"></div>
+                     <ul id="gamerooms" class="list-group overflow-auto mh-100 d-flex flex-column">
+                       <li>gameroom 1</li>
+                       <li>gameroom 2</li>
+                     </ul>
+
+                 </div>
+                 <div class="col-4" style="height:100%">
+                     <div>
+                       <h1 id="money">
+                       $4000
+                       </h1>
+                     </div>
+
+                     <div id="spacer"></div>
+
+                     <div class="col-11" id="leaderboard_container">
+                         <h3>
+                         Leaderboard
+                         </h3>
+                       <ul id="leaders" class="list-group overflow-auto mh-100 d-flex flex-column">
+                         <li>Top1</li>
+                         <li>Top2</li>
+                         <li>Top3</li>
+                     </ul>
+                     </div>
+
+                     <div id="spacer"></div>
+
+                     <div class="col-1" id="help_container">
+
+                     <button onclick="location.href = '/account.html';" type="button" class="btn btn-info" id="accountpage">
+                     Account
+                     </button>
+
+                     <button type="button" class="btn btn-info" id="help">
+                     Help
+                     </button>
+                     </div>
+                     <div id="spacer"></div>
+                     <div class="col-1" id="logout_container">
+                     <button type="button" class="btn btn-danger" id="logout">
+                     Logout
+                     </button>
+                     </div>
+
+                 </div>
+             </div>
+
+             <div class="row fixed-bottom">
+               <div class="col-2">
+                 <button type="button" class="btn btn-success">
+                 Host New Game
+                 </button>
+               </div>
+               <div class="col-1">
+                 <button type="button" class="btn btn-info">
+                 Refresh
+                 </button>
+               </div>
+             </div>
+         </div>
+     </div>
+  </body>
+
+</html>
