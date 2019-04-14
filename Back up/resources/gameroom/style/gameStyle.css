@@ -1,0 +1,453 @@
+body {
+    background: #1f513b;
+    background: linear-gradient(to top right, #1f513b, #0F2725) fixed;
+    text-align: center;
+    font-family: 'Lato', sans-serif;
+    color: white;
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, .brand-logo {
+    font-family: 'Arvo', serif;
+}
+
+h1 {
+    font-size: 4em;
+}
+
+h4 {
+    font-size: 1.75em;
+}
+
+p {
+    font-size: 1.25em;
+    line-height: 1.75em;
+}
+
+li {
+    display: inline-block;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover {
+    text-decoration: none;
+    color: #1E6692;
+    cursor: pointer;
+
+}
+
+
+.card-placeholder {
+    height: 145px;
+}
+
+
+#rules {
+    padding: 30px 20px 20px 20px;
+    text-align: left;
+    display: none;
+    background: #0F2725;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    font-size: .80em;
+}
+
+#rules h4 {
+    text-align: center;
+}
+
+#rules strong {
+    text-align: center;
+}
+
+.player-hands {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 50px;
+
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.bet-info {
+
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.dealer-row {
+
+    margin-bottom: 30px;
+}
+
+.bet {
+    margin-right: 10px;
+
+}
+
+#wager-input {
+    width: 70px;
+    border-radius: 5px;
+    border: aliceblue;
+    margin-left: 2px;
+
+}
+
+
+button, button:focus {
+    margin: 5px;
+    padding: 10px 20px;
+    background: #d60438;
+    color: white;
+    font-size: 1.25em;
+    font-weight: 400;
+    letter-spacing: 1px;
+    border: 0;
+}
+
+button.secondary {
+    background: #1E6692;
+}
+
+button:active {
+    background: black;
+}
+
+button.disabled-button, button.secondary.disabled-button {
+    background: #0F2725;
+}
+
+#deck-pile, #dealer, #user-hand, #user-split-hand {
+    display: inline-block;
+    position: relative;
+}
+
+.pile {
+    margin-right: 30px;
+}
+
+.timer {
+    margin-bottom: 30px;
+}
+
+#card-pile {
+    margin-right: 15px;
+}
+
+.card {
+    transition: all 3s;
+    display: inline-block;
+    background-color: transparent;
+    border-radius: 15px;
+    outline-offset: -6px;
+    outline: 6px solid white;
+    box-shadow: 3px 4px rgba(15, 39, 37, .25);
+    margin-bottom: 5px;
+}
+
+.card:hover {
+    z-index: 100;
+
+}
+
+
+.hand-total, .split-hand-total, .dealer-hand-total {
+    background-color: black;
+    padding: 10px 0;
+    margin: 2px;
+    display: inline-block;
+    font-size: 1.25em;
+    text-align: center;
+    width: 50px;
+    border-radius: 5px;
+
+
+}
+
+.bet-total {
+    text-align: center;
+}
+
+
+.nav-wrapper {
+    background-color: black;
+    text-align: left;
+    box-shadow: transparent;
+    height: 50px;
+}
+
+.navbar-fixed {
+    margin-bottom: 25px;
+}
+
+
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    color: #F9F0ED;
+
+}
+
+#messages li {
+    padding: 5px 10px;
+    display: block;
+    text-align: left;
+
+}
+
+#chat-box {
+    width: 400px;
+    height: 400px;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+    position: absolute;
+    top: 50px;
+    right: 0;
+    z-index: 99;
+    display: none;
+
+
+}
+
+.chat-window {
+    flex: auto;
+    max-height: calc(100% - 60px);
+    background: #2f323b;
+    overflow: auto;
+
+
+}
+
+.chat-input {
+    flex: 0 0 auto;
+    height: 60px;
+    background: #40434e;
+    border-top: 1px solid #2671ff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+}
+
+.chat-input input {
+    height: 59px;
+    line-height: 60px;
+    outline: 0 none;
+    border: none;
+    width: calc(100% - 60px);
+    color: white;
+    text-indent: 10px;
+    font-size: 12pt;
+    padding: 0;
+    background: #40434e;
+}
+
+.chat-input button {
+    float: right;
+    outline: 0 none;
+    border: none;
+    background: rgba(255, 255, 255, .25);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    padding: 2px 0 0 0;
+    margin: 10px;
+    transition: all 0.15s ease-in-out;
+}
+
+.popover-header {
+    color: black;
+}
+
+.popover-body {
+    color: black;
+    text-align: center;
+}
+
+
+@media only screen and (min-device-width: 410px) and (max-device-width: 480px) {
+    .card {
+        width: 77px;
+        height: 103.5px;
+    }
+
+    .card-placeholder {
+        height: 108.5px;
+    }
+
+
+    #chat-box {
+        width: 100%;
+
+    }
+
+    #nav-mobile {
+        text-align: center;
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    #dealer-total {
+        margin-left: 10px;
+    }
+
+    button, button:focus {
+        margin: 5px;
+        padding: 5px 10px;
+        background: #d60438;
+        color: white;
+        font-size: 1.25em;
+        font-weight: 400;
+        letter-spacing: 1px;
+        border: 0;
+    }
+}
+
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 409px) {
+
+    body {
+        width: 100%;
+    }
+
+    .card {
+        width: 60px;
+        height: 86.5px;
+
+    }
+
+
+    .card-placeholder {
+        height: 91.5px;
+    }
+
+    h4 {
+        font-size: 20px;
+    }
+
+    #chat-box {
+        width: 100%;
+
+    }
+
+    .hand-total, .split-hand-total, .dealer-hand-total {
+        background-color: black;
+        padding: 8px 0;
+        margin: 2px;
+        display: inline-block;
+        font-size: 1.25em;
+        text-align: center;
+        width: 35px;
+        border-radius: 5px;
+
+
+    }
+
+    button, button:focus {
+        margin: 5px;
+        padding: 5px 10px;
+        background: #d60438;
+        color: white;
+        font-size: 1.25em;
+        font-weight: 400;
+        letter-spacing: 1px;
+        border: 0;
+    }
+
+    #nav-mobile {
+        text-align: center;
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    #dealer-total {
+        margin-left: 10px;
+    }
+}
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 374px) {
+
+    h4 {
+        font-size: 14px;
+    }
+
+    span {
+        font-size: 12px;
+    }
+
+    button, button:focus {
+        margin: 5px;
+        padding: 2px 8px;
+    }
+}
+
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 359px) {
+
+    .card {
+        width: 50px;
+        height: 76.5px;
+
+    }
+
+    h4 {
+        font-size: 14px;
+    }
+
+    h5 {
+        font-size: 12px;
+    }
+
+    button, button:focus {
+        margin: 3px;
+        padding: 2px 5px;
+        font-size: 0.75em;
+    }
+
+    .card-placeholder {
+        height: 81.5px;
+    }
+
+    span {
+        width: 25px;
+        font-size: 12px;
+    }
+
+    .hand-total {
+        font-size: 12px;
+    }
+
+    #dealer-total {
+        margin-left: 15px;
+    }
+
+    input {
+    height: 20px;
+    }
+
+    #nav-mobile {
+        font-size: 14px;
+        height: 40px;
+    }
+}
+
+
+
+
+

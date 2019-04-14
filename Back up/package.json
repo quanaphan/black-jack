@@ -1,0 +1,25 @@
+{
+  "name": "black-jack",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "cookie": "^0.3.1",
+    "express": "^4.16.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quanaphan/black-jack.git"
+  },
+  "author": "Quan Phan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/quanaphan/black-jack/issues"
+  },
+  "homepage": "https://github.com/quanaphan/black-jack#readme"
+}
