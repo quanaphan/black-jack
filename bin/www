@@ -161,7 +161,7 @@ lobby.on('connection', function(socket){
     if(game_sessions[id]['capacity'] != max_session_capacity){
       game_sessions[id]['capacity'] += 1;
       var p = "p" + game_sessions[id]['capacity'];
-      game_sessions[id]['player'][p] =;
+      //game_sessions[id]['player'][p] =;
     }
 
     socket.emit('')
