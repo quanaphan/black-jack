@@ -1,38 +1,57 @@
 @keyframes deal-player {
     0% {
+        -webkit-transform:translate(-90px, -150px);
+        -moz-transform:translate(-90px, -150px);
         transform: translate(-90px, -150px);
     }
     50% {
+        -moz-transform:translate(-30px, -50px);
+        -webkit-transform:translate(-30px, -50px);
         transform: translate(-30px, -50px);
     }
 
     100% {
+        -moz-transform:translate(0, 0);
+        -webkit-transform:translate(0, 0);
         transform: translate(0, 0);
     }
 }
 
 @keyframes deal-dealer {
     0% {
+        -moz-transform:translate(-100px, 0px);
+        -webkit-transform:translate(-100px, 0px);
         transform: translate(-100px, 0px);
     }
     50% {
+        -moz-transform:translate(-30px, 0px);
+        -webkit-transform:translate(-30px, 0px);
         transform: translate(-30px, 0px);
     }
 
     100% {
+        -moz-transform:translate(0, 0);
+        -webkit-transform:translate(0, 0);
         transform: translate(0, 0);
     }
 }
 
 @keyframes deal-player1 {
     0% {
+
+        -moz-transform:translate(200px, -200px);
+        -webkit-transform:translate(200px, -200px);
         transform: translate(200px, -200px);
     }
     50% {
+        -moz-transform:translate(50px, -50px);
+        -webkit-transform:translate(50px, -50px);
         transform: translate(50px, -50px);
     }
 
     100% {
+        -moz-transform:translate(0, 0);
+        -webkit-transform:translate(0, 0);
         transform: translate(0, 0);
     }
 }
@@ -40,13 +59,19 @@
 
 @keyframes deal-player2 {
     0% {
+        -moz-transform:translate(-400px, -200px);
+        -webkit-transform:translate(-400px, -200px);
         transform: translate(-400px, -200px);
     }
     50% {
+        -moz-transform:translate(-50px, -30px);
+        -webkit-transform:translate(-50px, -30px);
         transform: translate(-50px, -30px);
     }
 
     100% {
+        -moz-transform:translate(0, 0);
+        -webkit-transform:translate(0, 0);
         transform: translate(0, 0);
     }
 }
@@ -127,30 +152,35 @@
 
 
 #dealer .card.flipped  {
+    -moz-animation: flip-scale-up-hor 0.5s linear both;
     -webkit-animation: flip-scale-up-hor 0.5s linear both;
     animation: flip-scale-up-hor 0.5s linear both;
 }
 
 #main-user .card {
+    -moz-animation: deal-player .5s linear;
+    -webkit-animation: deal-player .5s linear;
     animation: deal-player .5s linear;
 }
 
 
 #dealer .card {
+    -moz-animation: deal-dealer .5s linear;
+    -webkit-animation: deal-dealer .5s linear;
     animation: deal-dealer .5s linear;
 }
 #player1 .card {
+    -moz-animation: deal-player1 .5s linear;
+    -webkit-animation: deal-player1 .5s linear;
     animation: deal-player1 .5s linear;
 }
 
 #player2 .card {
+    -moz-animation: deal-player2 .5s linear;
+    -webkit-animation: deal-player2 .5s linear;
     animation: deal-player2 .5s linear;
 }
 
-
-#main-user .card {
-    animation: deal-player .5s linear;
-}
 
 @media only screen and (min-device-width: 320px) and (max-device-width: 480px) {
 

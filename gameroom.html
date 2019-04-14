@@ -167,7 +167,11 @@
         flipHiddenCard();
         setTimeout(function () {
             displayHandTotals();
+            dealCard(player2Hand, $('#player2'))
+           let bo = hasAce(player2Hand)
+            reduceAceValue(player2Hand)
 
+            displayHandTotals()
 
         }, waitTime);
 

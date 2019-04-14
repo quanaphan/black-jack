@@ -40,7 +40,7 @@ function dealCard(hand, location) {
     // Create card image for card, hide initially so it doesn't impact transition
     let cardImage = $("<img>").attr("class", "card").attr("src", "img/" + hand[index].src).hide();
     cardImage.attr("id", playerTurn + "-card-" + index);
-    console.log(cardImage);
+
 
     // To create stacked card effect
     if (index === 0) {
@@ -48,7 +48,8 @@ function dealCard(hand, location) {
 
     } else if (index > 0) {
 
-        if (location.id === dealerPlayerArea.id && index === 1) {
+
+        if (location.is(dealerPlayerArea) && index === 1) {
             cardImage.attr("src", "img/card_back.png");
 
         }
@@ -197,7 +198,11 @@ function displayHandTotals() {
     mainPlayerTotal = calculateHandTotals(mainPlayerHand);
     player1Total = calculateHandTotals(player1Hand);
     player2Total = calculateHandTotals(player2Hand);
-
+    console.log(player2Hand);
+    console.log(dealerTotal);
+    console.log(mainPlayerTotal);
+    console.log(player1Total);
+    console.log(player2Total);
     $("#dealer-total").text(dealerTotal);
     $("#player1-total").text(player1Total);
     $("#main-user-total").text(mainPlayerTotal);
@@ -277,9 +282,9 @@ function hasAce(hand) {
 
 /**
  * finds the aces in the hand that has not already been reduced and sets its value to 1
- * returns the new total of the hand
+ *
  * @param hand
- * @returns {number}
+ *
  */
 function reduceAceValue(hand) {
     let total = calculateHandTotals(hand);
@@ -287,9 +292,9 @@ function reduceAceValue(hand) {
     if (hasAce(hand) && total > 21) {
         for (let i = 0; i < hand.length; i++) {
             if (hand[i].name === "ace" && hand[i].value === 11) {
-                hand[i] = 1;
-                total -= 10;
-                return total;
+                hand[i].value = 1;
+
+               break;
             }
         }
 
