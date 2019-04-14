@@ -232,5 +232,5 @@ io.on('connection', function(socket){
 })
 const port=process.env.PORT || 3000
 http.listen(port, function(){
-    console.log('listening on *:8000');
+    console.log('listening on *:3000');
 });

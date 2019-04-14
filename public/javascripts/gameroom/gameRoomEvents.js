@@ -38,7 +38,7 @@ function dealCard(hand, location) {
     }
 
     // Create card image for card, hide initially so it doesn't impact transition
-    let cardImage = $("<img>").attr("class", "card").attr("src", "img/" + hand[index].src).hide();
+    let cardImage = $("<img>").attr("class", "card").attr("src", "images/" + hand[index].src).hide();
     cardImage.attr("id", playerTurn + "-card-" + index);
 
 
@@ -50,7 +50,7 @@ function dealCard(hand, location) {
 
 
         if (location.is(dealerPlayerArea) && index === 1) {
-            cardImage.attr("src", "img/card_back.png");
+            cardImage.attr("src", "images/card_back.png");
 
         }
         let screenWidth = (window.innerWidth > 0) ? window.innerWidth : screen.width;
@@ -248,7 +248,7 @@ function flipHiddenCard() {
     setTimeout(function () {
         if (dealerHand.length === 2) {
             $("#dealer-card-1").addClass("flipped");
-            $("#dealer-card-1").attr("src", "img/" + dealerHand[1].src);
+            $("#dealer-card-1").attr("src", "images/" + dealerHand[1].src);
         }
     }, 5000);
 }
