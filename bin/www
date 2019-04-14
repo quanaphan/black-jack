@@ -30,6 +30,7 @@ var io = require('socket.io')(server);
  */
 // config + init
 var game_sessions = {};
+var player_sessions = {};
 //need a player list of sort here
 var cards = require('../utilities/cards');
 const max_session_capacity = 3;
@@ -37,7 +38,9 @@ var session_capacity = 4;
 const cap_increment = 4;
 const lobby = io.of('/lobby');
 const game = io.of('/game');
-
+/**
+ * Utitlities for game_sessions
+ */
 /**
  * Populate game session from start to end
  */
@@ -45,13 +48,24 @@ var populate_game_sessions = function(start,end){
   for(i = start; i <= end; i++){
     var key = i;
     game_sessions[key] = {};
-    game_sessions[key]['owner'] = "";
+    game_sessions[key]['host'] = "";
     game_sessions[key]['title'] = "";
     game_sessions[key]['players'] = {};
     game_sessions[key]['active'] = false;
     game_sessions[key]['capacity'] = 0;
     game_sessions[key]['id'] = key;
   }
+}
+
+/**
+ * Reset session
+ */
+var reset_session = function(key){
+    game_sessions[key]['host'] = "";
+    game_sessions[key]['title'] = "";
+    game_sessions[key]['players'] = {};
+    game_sessions[key]['active'] = false;
+    game_sessions[key]['capacity'] = 0;
 }
 
 /**
@@ -71,6 +85,38 @@ var avail_session = function(){
   session_capacity += cap_increment;
   return id;
 }
+/**
+ * Utitlities for player_sessions
+ */
+/**
+ * Create a new user under requested name
+ * return true on success, return false on failure
+ */
+var create_user = function(name){
+  if(player_sessions.hasOwnProperty(name)){
+    if(player_sessions[name]['expire']){
+      reset_player(name);
+      return true;//success
+    }else{
+      return false;//fail
+    }
+  }else{
+    player_sessions[name] = {};
+    player_sessions[name]['balance'] = 100;
+    return true;//success
+  }
+}
+
+/**
+ * Reset session
+ */
+var reset_player = function(key){
+    player_sessions['key']['balance'] = 100;
+}
+
+
+
+
 
 //init game session, starts from 1
 populate_game_sessions(1, session_capacity);
@@ -96,7 +142,7 @@ lobby.on('connection', function(socket)){
     var id = avail_session();
     //TODO - link socket ID to player session?
     //Fill metadata
-    game_sessions[id]['owner'] = socket.id;
+    game_sessions[id]['host'] = socket.id;//change to playerid instead
     game_sessions[id]['title'] = title;
     game_sessions[id]['player']['p1'] = socket.id;
     game_sessions[id]['active'] = true;
@@ -111,7 +157,8 @@ lobby.on('connection', function(socket)){
     //check if room is not full
     if(game_sessions[id]['capacity'] != max_session_capacity){
       game_sessions[id]['capacity'] += 1;
-      game_sessions[id]['player']
+      var p = "p" + game_sessions[id]['capacity'];
+      game_sessions[id]['player'][p] =;
     }
 
     socket.emit('')
