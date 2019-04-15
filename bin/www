@@ -102,6 +102,12 @@ var create_session = function(id, title, username){
   game_sessions[id]['title'] = title;
   game_sessions[id]['players'][username] = {};
   game_sessions[id]['players'][username]['username'] = username;
+  game_sessions[id]['players'][username]['nickname'] = player_sessions[username]['nickname'];
+  game_sessions[id]['players'][username]['hand'] = [];
+  game_sessions[id]['p1'] = username;
+  game_sessions[id]['dealer'] = {};
+  game_sessions[id]['dealer']['hand'] = [];
+  game_sessions[id]['turn'] = 'p1';
   game_sessions[id]['active'] = true;
   game_sessions[id]['capacity'] = 1;
   game_sessions[id]['deck'] = [...cards];
@@ -206,8 +212,6 @@ lobby.on('connection', function(socket){
     //redirect back to login
   }
 
-  //TODO get nickname here
-
   console.log('connected');
   var connected_session = -1;
   //send out game lobby list
@@ -235,8 +239,13 @@ lobby.on('connection', function(socket){
     if(game_sessions[id]['capacity'] != max_session_capacity){
       //increase capacity
       game_sessions[id]['capacity'] += 1;
-      var p = "p" + game_sessions[id]['capacity'];
-      game_sessions[id]['players'][p] = username;
+      // init metadata
+      game_sessions[id]['players'][username] = {};
+      game_sessions[id]['players'][username]['username'] = username;
+      game_sessions[id]['players'][username]['nickname'] = player_sessions[username]['nickname'];
+      game_sessions[id]['players'][username]['hand'] = [];
+      var p = 'p' + game_sessions[id]['capacity'];
+      game_sessions[id][p] = username;
       //send ack, refresh lobby list
       socket.emit('join success', id)
       lobby.emit('lobby update', JSON.stringify(game_sessions));
@@ -256,10 +265,42 @@ lobby.on('connection', function(socket){
   })
 })
 
-function dealPlayerCard(session, username){
-  session['players'][username]['hand'].push(session['deck'].pop());
+
+function nextPlayer(session){
+  switch(session['turn']){
+    case 'p1':
+      // to player 2
+      session['turn'] = 'p2';
+      break;
+    case 'p2':
+      // to player 3
+      session['turn'] = 'p3';
+      break;
+    case 'p3':
+      // to dealer
+      session['turn'] = 'dealer';
+      break;
+    case 'dealer':
+      // to o1
+      session['turn'] = 'p1';
+      break;
+  }
 }
-function dealDealerCard(session){}
+
+function dealCard(session){
+  // get turn
+  var turn = session['turn'];
+  // if dealer's
+  if(turn === 'dealer'){
+    session['dealer']['hand'].push(session['deck'].pop());
+  }else{ // if player's
+    var username = session[turn];
+    session['players'][username]['hand'].push(session['deck'].pop());
+  }
+}
+function dealDealerCard(session){
+  
+}
 
 
 /**
@@ -311,9 +352,17 @@ game.on('connection', function(socket){
     session['players'][username]['bet'] = betAmount;
   });
 
+  // when all bets are placed
   socket.on('card distribution request', function(){
     if(username === session['host']){//only the host can request
-      dealPlayerCard(session, username);
+      // first distribution
+      // loop through 2 whole cycles
+      for (var i = 0; i < 8; i++) {
+        dealCard(session);
+        nextPlayer(session);
+      }
+      // tell all to play card distribution animation
+      game.to(channelname).emit('init card distribution', JSON.stringify(session));
     }
   })
 
