@@ -268,6 +268,37 @@ lobby.on('connection', function(socket){
   })
 })
 
+/**
+ * Profile/account socket logics
+ */
+account.on('connection', function(socket){
+  var username = '';
+  console.log(socket.handshake.headers.cookie);
+  if(socket.handshake.headers.cookie){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        username = socket_cookie['username'];
+      }else{
+        // failed to get cookie
+        socket.emit('redirect to login');
+      }
+    }else{
+      // failed to get cookie
+      socket.emit('redirect to login');
+    }
+  }else{
+    // failed to get cookie
+    socket.emit('redirect to login');
+  }
+
+  socket.emit('init', JSON.stringify(player_sessions[username]));
+
+  // more functionalities?
+
+})
 
 function nextPlayer(session){
   switch(session['turn']){
@@ -304,7 +335,6 @@ function dealCard(session){
 function dealDealerCard(session){
   
 }
-
 
 /**
  * Game session logic
@@ -376,9 +406,21 @@ game.on('connection', function(socket){
 
   // when card deal is requested
   socket.on('card deal', function(){
-
+    dealCard(session);
+    // card dealt, to user, new session info
+    game.to(channelname).emit('card dealt', username, JSON.stringify(session));
   })
 
+  // stay/pass
+  socket.on('pass', function(){
+    nextPlayer(session);
+    // next player, new session
+    game.to(channelname).emit('next player', JSON.stringify(session));
+  })
+
+  socket.on('split', function(){
+    // do something for split
+  })
 
 
 })
