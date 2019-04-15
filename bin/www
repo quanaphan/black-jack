@@ -157,7 +157,7 @@ login.on('connection', function(socket){
   }
 
   socket.on('login', function(username, password){
-    var validate = database.validateUser;
+    var validate = database.validate;
     var authorize = validate(username, password);//call function to authorize access
     console.log('received ' + authorize);
     if (authorize === true){
