@@ -244,10 +244,10 @@ lobby.on('connection', function(socket){
   })
 })
 
-function dealplayerCard(session, username){
+function dealPlayerCard(session, username){
   session['player'][username]['hand'].push(session['deck'].pop());
 }
-function dealdealerCard
+function dealDealerCard
 
 
 /**
