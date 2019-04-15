@@ -307,6 +307,47 @@ var setUserBalance = function(userName, newBalance){
 		});
 }
 
+var getTopUsers = function(cb){
+	
+	const MongoClient = require('mongodb').MongoClient;
+
+	// replace the uri string with your connection string.
+	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
+	MongoClient.connect(uri, function(err, client) {
+		if(err) {
+			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
+		}else{
+			console.log('Connected...');
+			const db = client.db("Blackjack");
+			const collection = db.collection("Users");
+			var sort = { balance: -1 };
+			collection.find().sort(sort).toArray((function(err, result){
+				if(err){
+					console.log("error in find");
+				}else if(result != null){
+					console.log("success find function");
+					console.log(result);
+					//cb(result);
+				}else{
+					console.log("no users found");
+				}
+			}));
+			client.close();
+			//collection.insertOne( {username: "poop", password: "wtfisthis"});
+			//var query = { username: "poop" };
+			//var newval = { $set: {balance: 500 }};
+			//collection.updateOne(query, newval, function(err, res){
+			//	if(err){
+			//		console.log("error");
+			//	}else{
+			//		console.log("success");
+			//	}
+				// perform actions on the collection object
+				//client.close();
+			}
+		});
+}
+
 module.exports = {
 	setUserBalance,
 	setUserNickname,
