@@ -60,6 +60,10 @@ var populate_game_sessions = function(start,end){
   }
 }
 
+//init game session, starts from 1
+populate_game_sessions(0, session_capacity);
+
+
 /**
  * Reset session
  */
@@ -137,9 +141,6 @@ var update_balance = function(key, balance){
   database.setUserBalance(key, balance);
   player_sessions[key]['balance'] = balance;
 }
-
-//init game session, starts from 1
-populate_game_sessions(1, session_capacity);
 
 /**
  * Login socket logics
