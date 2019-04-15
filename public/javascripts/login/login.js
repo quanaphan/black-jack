@@ -17,7 +17,7 @@ $(document).ready(function(){
 	socket.on('login success', function(){
 		console.log("success");
 		var now = new Date();
-       	now.setTime(now.getTime() + (246060*1000)); // valid for 1 day
+       	now.setTime(now.getTime() + (24*60*60*1000)); // valid for 1 day
         cookie_string = 'username=' + usr +'; expires=' + now.toUTCString() + '; path=/';
         document.cookie = cookie_string;
         cookie_string = 'authorized=' + true +'; expires=' + now.toUTCString() + '; path=/';
