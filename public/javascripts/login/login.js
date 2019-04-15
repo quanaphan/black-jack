@@ -14,8 +14,9 @@ $(document).ready(function(){
 	}
 
 	socket.on('login success', function(){
-
 		console.log("success");
+		window.location.href = "/lobby";
+
 	});
 	socket.on('login failure', function(){
 		console.log("failed");
