@@ -18,7 +18,7 @@ $(document).ready(function(){
 	});
 
 	socket.on('lobby update', function(){
-		console.log("failed");
+		//console.log("failed");
 	});
 
 
