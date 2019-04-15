@@ -158,14 +158,9 @@ login.on('connection', function(socket){
 
   socket.on('login', function(username, password){
     var validate = database.validateUser;
-    var result;
-    var authorize = new Promise(function(resolve, reject){
-      validate(username, password, function(result){
-      })
-      resolve(result);
-      reject(false);
-    }).then(() => {
-      console.log('received ' + authorize);
+    var authorize = validate(username,password)
+      .then(function(result){
+        console.log('received ' + result);
       if (result){
         // success, load user from DB and emit success msg
         load_user(username);
@@ -175,10 +170,6 @@ login.on('connection', function(socket){
         socket.emit('login failure');
       }
     })
-    
-
-    
-    
   })
 })
 
