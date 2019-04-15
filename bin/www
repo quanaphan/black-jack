@@ -127,16 +127,20 @@ var shuffle_deck = function(id){
  * Create a new user under requested name
  * return true on success, return false on failure
  */
-var load_user = function(key){
+var load_user = function(key, cb){
   player_sessions[key] = {};
+  player_sessions[key]['username'] = key;
+  // load nickname from DB
   database.getUserNickname(key, function(result){
     player_sessions[key]['nickname'] = result;
-  });// load nickname from DB
-  player_sessions[key]['balance'] = 
-  database.getUserBalance(key, function(result){
-    player_sessions[key]['balance'] = result;
-  });// load from DB
-  player_sessions[key]['username'] = key;
+    // load balance
+    database.getUserBalance(key, function(result){
+      player_sessions[key]['balance'] = result;
+      // call back
+      cb();
+    });
+  });
+  
 }
 
 var update_nick = function(key, nickname){
@@ -203,7 +207,9 @@ lobby.on('connection', function(socket){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
         console.log("user connected to lobby is '" + username + "'");
-        load_user(username);
+        load_user(username, function(){
+          socket.emit('init', JSON.stringify(player_sessions[username]));
+        });
       }else{
         // failed to get cookie
         socket.emit('redirect to login');
@@ -283,7 +289,9 @@ account.on('connection', function(socket){
     if(socket_cookie){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
-        load_user(username);
+        load_user(username, function(){
+          socket.emit('init', JSON.stringify(player_sessions[username]));
+        });
       }else{
         // failed to get cookie
         socket.emit('redirect to login');
@@ -296,8 +304,6 @@ account.on('connection', function(socket){
     // failed to get cookie
     socket.emit('redirect to login');
   }
-
-  socket.emit('init', JSON.stringify(player_sessions[username]));
 
   // more functionalities?
 
@@ -350,6 +356,9 @@ game.on('connection', function(socket){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
         sessionID = socket_cookie['sessionID'];
+        load_user(username, function(){
+          socket.emit('init', JSON.stringify(player_sessions[username]));
+        })
       }else{
         //redirect back to login
       }
@@ -462,7 +471,7 @@ game.on('connection', function(socket){
       // also have to consider
       // Save balance to DB according to win/lose w/ placed bet
     }
-  }
+  });
 })
 
 // not needed, probably
