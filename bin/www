@@ -186,7 +186,7 @@ login.on('connection', function(socket){
 lobby.on('connection', function(socket){
   //should have credentials
   var username = '';
-  if(socket.handshake.headers.cookie){
+  if(socket.handshake.headers.cookie == undefined){
     console.log('cookies detected. checking cookies');
     var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
     console.log(socket_cookie);
@@ -265,7 +265,7 @@ function dealDealerCard(session){}
 game.on('connection', function(socket){
   var username = '';
   var sessionID = -1;
-  if(socket.handshake.headers.cookie){
+  if(socket.handshake.headers.cookie == undefined){
     console.log('cookies detected. checking cookies');
     var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
     console.log(socket_cookie);
