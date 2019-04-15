@@ -301,7 +301,7 @@ game.on('connection', function(socket){
 
   socket.on('card distribution request', function(){
     if(username === session['host']){//only the host can request
-      dealCard(session, username);
+      dealPlayerCard(session, username);
     }
   })
 
