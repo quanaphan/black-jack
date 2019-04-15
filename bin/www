@@ -164,17 +164,17 @@ login.on('connection', function(socket){
       })
       resolve(result);
       reject(false);
-    }).then(function(authorize){
-      console.log('received ' + authorize);
-      if (authorize === true){
-        // success, load user from DB and emit success msg
-        load_user(username);
-        socket.emit('login success');
-      } else{
-        // failed, emit failure msg
-        socket.emit('login failure');
-      }
-    });
+    })
+
+    console.log('received ' + authorize);
+    if (authorize === true){
+      // success, load user from DB and emit success msg
+      load_user(username);
+      socket.emit('login success');
+    } else{
+      // failed, emit failure msg
+      socket.emit('login failure');
+    }
     
   })
 })
