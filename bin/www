@@ -202,6 +202,8 @@ lobby.on('connection', function(socket){
     if(socket_cookie){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
+        console.log("user connected to lobby is '" + username + "'");
+        load_user(username);
       }else{
         // failed to get cookie
         socket.emit('redirect to login');
@@ -281,6 +283,7 @@ account.on('connection', function(socket){
     if(socket_cookie){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
+        load_user(username);
       }else{
         // failed to get cookie
         socket.emit('redirect to login');

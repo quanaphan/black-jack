@@ -1,1 +1,6 @@
-var hi = null;
+$(document).ready(function(){
+	var socket = io('/account');
+
+
+
+});
