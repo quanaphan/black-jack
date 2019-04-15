@@ -100,11 +100,14 @@ var avail_session = function(){
 var create_session = function(id, title, username){
   game_sessions[id]['host'] = username;
   game_sessions[id]['title'] = title;
-  game_sessions[id]['player'][username] = {};
-  game_sessions[id]['player'][username]['username'] = username;
+  game_sessions[id]['players'][username] = {};
+  game_sessions[id]['players'][username]['username'] = username;
   game_sessions[id]['active'] = true;
   game_sessions[id]['capacity'] = 1;
-  game_sessions[id]['deck'] = Object.clone(cards);
+  console.log(cards);
+  game_sessions[id]['deck'] = [...cards];
+  console.log("deck ");
+  console.log(game_sessions[id]['deck']);
 }
 
 /**
@@ -236,7 +239,7 @@ lobby.on('connection', function(socket){
       //increase capacity
       game_sessions[id]['capacity'] += 1;
       var p = "p" + game_sessions[id]['capacity'];
-      game_sessions[id]['player'][p] = username;
+      game_sessions[id]['players'][p] = username;
       //send ack, refresh lobby list
       socket.emit('join success', id)
       lobby.emit('lobby update', JSON.stringify(game_sessions));
@@ -257,7 +260,7 @@ lobby.on('connection', function(socket){
 })
 
 function dealPlayerCard(session, username){
-  session['player'][username]['hand'].push(session['deck'].pop());
+  session['players'][username]['hand'].push(session['deck'].pop());
 }
 function dealDealerCard(session){}
 
@@ -308,7 +311,7 @@ game.on('connection', function(socket){
   // ready to start
   socket.on('ready', function(betAmount){
     game.to(channelname).emit('lock in', username);
-    session['player'][username]['bet'] = betAmount;
+    session['players'][username]['bet'] = betAmount;
   });
 
   socket.on('card distribution request', function(){
