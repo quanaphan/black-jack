@@ -6,18 +6,17 @@ $(document).ready(function(){
 		console.log("inside init");
 		player = JSON.parse(sessionPlayer);
 		console.log(player);
-		$('#username').text(player['username']);
-		$('#money').text("Balance: $" + player['balance']);
 	});
 
-	$('#game-create-enter').click(function(event){
+	$('#createRoom').click(function(event){
 		event.preventDefault();
-		host($('#room-name').val());
+		console.log("creating event");
+		host();
 	});
 
-	function host(roomName){
+	function host(){
 		console.log("creating room");
-		socket.emit('create room', roomName);
+		socket.emit('create room', "New Room");
 	}
 
 	var gameSessions = {};
@@ -30,7 +29,7 @@ $(document).ready(function(){
 		var i;
 		for(i = 0; i < count; i++){
 			if(gameSessions[i]['active']){
-				$('#gamerooms').append($('<li>').text("Room#" + gameSessions[i]['id'] + " \"" + gameSessions[i]['title'] + "\" " + gameSessions[i]['capacity'] + "/3"));
+				$('#gamerooms').append($('<li>').text("Room#" + gameSessions[i]['id'] + " " + gameSessions[i]['title'] + " " + gameSessions[i]['capacity'] + "/3"));
 			}
 		}
 
