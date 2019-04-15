@@ -441,7 +441,7 @@ game.on('connection', function(socket){
   })
 
   // game end, total up
-  socket.on('tally score'. function(){
+  socket.on('tally score', function(){
     if(username === session['host']){
       // only host can request a tally
       
