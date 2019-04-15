@@ -172,24 +172,6 @@ login.on('connection', function(socket){
         socket.emit('login failure');
       }
     })
-    // var authorize = new Promise(function(resolve,reject){
-    //   var result = validate(username,password);
-    //   setTimeout(function(){
-    //     resolve(result);
-    //   }, 500);
-    // }).then(function(result){
-    //   console.log('received ' + result);
-    //   if (result){
-    //     // success, load user from DB and emit success msg
-    //     load_user(username);
-    //     console.log('login success');
-    //     socket.emit('login success');
-    //   } else{
-    //     // failed, emit failure msg
-    //     console.log('login failure');
-    //     socket.emit('login failure');
-    //   }
-    // })
   })
 })
 
