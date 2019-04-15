@@ -158,7 +158,7 @@ login.on('connection', function(socket){
 
   socket.on('login', function(username, password){
     var authorize = database.validateUser(username, password);//call function to authorize access
-    if (authorize){
+    if (authorize == true){
       // success, load user from DB and emit success msg
       load_user(username);
       socket.emit('login success');
@@ -243,7 +243,7 @@ lobby.on('connection', function(socket){
 })
 
 function dealCard(session, username){
-
+  session['player'][username]['hand'].push(session['deck'].pop());
 }
 
 
@@ -293,7 +293,7 @@ game.on('connection', function(socket){
   // ready to start
   socket.on('ready', function(betAmount){
     game.to(channelname).emit('lock in', username);
-    session[username]['bet'] = betAmount;
+    session['player'][username]['bet'] = betAmount;
   });
 
   socket.on('card distribution request', function(){
