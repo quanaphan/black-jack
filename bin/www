@@ -166,9 +166,11 @@ login.on('connection', function(socket){
       if (result){
         // success, load user from DB and emit success msg
         load_user(username);
+        console.log('login success');
         socket.emit('login success');
       } else{
         // failed, emit failure msg
+        console.log('login failure');
         socket.emit('login failure');
       }
     })
