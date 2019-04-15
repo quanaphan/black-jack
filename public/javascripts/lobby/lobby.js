@@ -10,7 +10,7 @@ $(document).ready(function(){
 		$('#money').text("Balance: $" + player['balance']);
 	});
 
-	$('#createRoom').click(function(event){
+	$('#game-create-enter').click(function(event){
 		event.preventDefault();
 		host($('#room-name').val());
 	});
