@@ -63,6 +63,49 @@ var connectToDatabase = function(){
 	};
 
 	
+var validateUser = function(userName, password, cb){
+	
+	const MongoClient = require('mongodb').MongoClient;
+
+	// replace the uri string with your connection string.
+	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
+	MongoClient.connect(uri, function(err, client) {
+		if(err) {
+			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
+		}else{
+			console.log('Connected...');
+			const db = client.db("Blackjack");
+			const collection = db.collection("Users");
+			collection.findOne({username: userName}, (function(err, result){
+				if(err){
+					console.log("error in find");
+				}else if(result != null){
+					console.log("success find function");
+					if(result.username === userName && result.password === password){
+						cb(true);
+					}else{
+						cb(false);
+					}
+				}else{
+					console.log("user does not exists");
+					cb(false);
+				}
+			}));
+			client.close();
+			//collection.insertOne( {username: "poop", password: "wtfisthis"});
+			//var query = { username: "poop" };
+			//var newval = { $set: {balance: 500 }};
+			//collection.updateOne(query, newval, function(err, res){
+			//	if(err){
+			//		console.log("error");
+			//	}else{
+			//		console.log("success");
+			//	}
+				// perform actions on the collection object
+				//client.close();
+			}
+		});
+}
 
 var addUser = function(userName){
 	const MongoClient = require('mongodb').MongoClient;
@@ -110,7 +153,7 @@ var addUser = function(userName){
 	
 }
 
-var getUserNickname = function(userName){
+var getUserNickname = function(userName, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
 
@@ -128,7 +171,7 @@ var getUserNickname = function(userName){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					return result.nickName;
+					cb(result.nickName);
 				}else{
 					console.log("user does not exists");
 				}
@@ -149,7 +192,7 @@ var getUserNickname = function(userName){
 		});
 }
 
-var getUserBalance = function(userName){
+var getUserBalance = function(userName, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
 
@@ -167,7 +210,7 @@ var getUserBalance = function(userName){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					return result.balance;
+					cb(result.balance);
 				}else{
 					console.log("user does not exists");
 				}
@@ -269,7 +312,8 @@ module.exports = {
 	setUserNickname,
 	getUserBalance,
 	getUserNickname,
-	addUser
+	addUser,
+	validateUser
 }
 
 

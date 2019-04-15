@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('black-jack:server');
 var http = require('http');
+const cookie = require('cookie');
 /**
  * Get port from environment and store in Express.
  */
@@ -26,38 +27,403 @@ var server = http.createServer(app);
 var io = require('socket.io')(server);
 
 /**
- * Socket logics, only required for game sessions
+ * Socket logics
  */
-// Game session
+// config + init
 var game_sessions = {};
+var player_sessions = {};
+//need a player list of sort here
 var cards = require('../utilities/cards');
+var database = require('../database/db.js');
+const max_session_capacity = 3;
+var session_capacity = 4;
+const cap_increment = 4;
+const lobby = io.of('/lobby');
+const game = io.of('/game');
+const login = io.of('/login');
+const account = io.of('/account');
+/**
+ * Utitlities for game_sessions
+ */
+/**
+ * Populate game session from start to end
+ */
 var populate_game_sessions = function(start,end){
   for(i = start; i <= end; i++){
     var key = i;
     game_sessions[key] = {};
-    game_sessions[key]['owner'] = "";
+    game_sessions[key]['host'] = "";
+    game_sessions[key]['title'] = "";
     game_sessions[key]['players'] = {};
     game_sessions[key]['active'] = false;
     game_sessions[key]['capacity'] = 0;
     game_sessions[key]['id'] = key;
   }
 }
-const lobby = io.of('/lobby');
-const game = io.of('/game');
+
+//init game session, starts from 1
+populate_game_sessions(0, session_capacity);
+
+
+/**
+ * Reset session
+ */
+var reset_session = function(key){
+    game_sessions[key]['host'] = "";
+    game_sessions[key]['title'] = "";
+    game_sessions[key]['players'] = {};
+    game_sessions[key]['active'] = false;
+    game_sessions[key]['capacity'] = 0;
+}
+
+/**
+ * Get next avail game session
+ */
+var avail_session = function(){
+  for (var i = 1; i <= session_capacity; i++) {
+    if(!game_sessions[i]['active']){
+      //if game session is avail, return the session key/id
+      return i;
+    }
+  }
+  //fail to find an available session, all session busy
+  //creating new session
+  populate_game_sessions(session_capacity+1,session_capacity + cap_increment);
+  var id = session_capacity+1;
+  session_capacity += cap_increment;
+  return id;
+}
+
+/**
+ * Create a game session
+ */
+var create_session = function(id, title, username){
+  game_sessions[id]['host'] = username;
+  game_sessions[id]['title'] = title;
+  game_sessions[id]['players'][username] = {};
+  game_sessions[id]['players'][username]['username'] = username;
+  game_sessions[id]['players'][username]['nickname'] = player_sessions[username]['nickname'];
+  game_sessions[id]['players'][username]['hand'] = [];
+  game_sessions[id]['p1'] = username;
+  game_sessions[id]['dealer'] = {};
+  game_sessions[id]['dealer']['hand'] = [];
+  game_sessions[id]['turn'] = 'p1';
+  game_sessions[id]['active'] = true;
+  game_sessions[id]['capacity'] = 1;
+  game_sessions[id]['deck'] = [...cards];
+}
+
+/**
+ * shuffle deck of given game session
+ */
+var shuffle_deck = function(id){
+  game_sessions[id]['deck'] = shuffle(game_sessions[id]['deck']);
+}    
+
+/**
+ * Utitlities for player_sessions
+ */
+/**
+ * Create a new user under requested name
+ * return true on success, return false on failure
+ */
+var load_user = function(key){
+  player_sessions[key] = {};
+  database.getUserNickname(key, function(result){
+    player_sessions[key]['nickname'] = result;
+  });// load nickname from DB
+  player_sessions[key]['balance'] = 
+  database.getUserBalance(key, function(result){
+    player_sessions[key]['balance'] = result;
+  });// load from DB
+  player_sessions[key]['username'] = key;
+}
+
+var update_nick = function(key, nickname){
+  database.setUserNickname(key, nickname);
+  player_sessions[key]['nickname'] =  nickname;
+}
+
+var update_balance = function(key, balance){
+  database.setUserBalance(key, balance);
+  player_sessions[key]['balance'] = balance;
+}
+
+/**
+ * Login socket logics
+ */
+login.on('connection', function(socket){
+  console.log(socket.id + 'connected')
+  // if has cookies
+  if(socket.handshake.headers.cookie){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        //add to player list & redirect
+        load_user(socket_cookie['username']);
+        // redirect to lobby
+        socket.emit('login success');
+      }
+    }
+  }
+
+  socket.on('login', function(username, password){
+    var validate = database.validateUser;
+    var result;
+    validate(username, password, function(result){
+      console.log('result = ' + result);
+      if (result){
+        // success, load user from DB and emit success msg
+        load_user(username);
+        console.log('login success');
+        socket.emit('login success');
+      } else{
+        // failed, emit failure msg
+        console.log('login failure');
+        socket.emit('login failure');
+      }
+    })
+  })
+})
 
 /**
  * Lobby socket logics
  */
-lobby.on('connection', function(socket)){
+lobby.on('connection', function(socket){
+  //should have credentials
+  var username = '';
+  console.log(socket.handshake.headers.cookie);
+  if(socket.handshake.headers.cookie){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        username = socket_cookie['username'];
+      }else{
+        // failed to get cookie
+        socket.emit('redirect to login');
+      }
+    }else{
+      // failed to get cookie
+      socket.emit('redirect to login');
+    }
+  }else{
+    // failed to get cookie
+    socket.emit('redirect to login');
+  }
+
   console.log('connected');
+  var connected_session = -1;
   //send out game lobby list
-  socket.emit('lobby_update', JSON.stringify(game_sessions));
-  socket.on('disconenct', function(){
-    
+  socket.emit('lobby update', JSON.stringify(game_sessions));
+  //need leaderboard stuffs here
+
+  //requesting a lobby list refresh
+  socket.on('refresh', function(){
+    socket.emit('lobby update', JSON.stringify(game_sessions));
   })
+
+  //request to create a room
+  socket.on('create room', function(title){
+    var id = avail_session();
+    //Fill metadata
+    create_session(id,title,username);
+    // send ack, refresh lobby list
+    socket.emit('create success', id);
+    lobby.emit('lobby update', JSON.stringify(game_sessions));
+  })
+
+  //requesting to join a room
+  socket.on('join room', function(id){
+    //check if room is not full
+    if(game_sessions[id]['capacity'] != max_session_capacity){
+      //increase capacity
+      game_sessions[id]['capacity'] += 1;
+      // init metadata
+      game_sessions[id]['players'][username] = {};
+      game_sessions[id]['players'][username]['username'] = username;
+      game_sessions[id]['players'][username]['nickname'] = player_sessions[username]['nickname'];
+      game_sessions[id]['players'][username]['hand'] = [];
+      var p = 'p' + game_sessions[id]['capacity'];
+      game_sessions[id][p] = username;
+      //send ack, refresh lobby list
+      socket.emit('join success', id)
+      lobby.emit('lobby update', JSON.stringify(game_sessions));
+    }else{
+      //room is full
+      socket.emit('join fail');
+    }
+  })
+
+  socket.on('leave room', function(){
+    // do something
+  })
+
+  socket.on('disconenct', function(){
+    // do something
+    console.log('disconnect');
+  })
+})
+
+/**
+ * Profile/account socket logics
+ */
+account.on('connection', function(socket){
+  var username = '';
+  console.log(socket.handshake.headers.cookie);
+  if(socket.handshake.headers.cookie){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        username = socket_cookie['username'];
+      }else{
+        // failed to get cookie
+        socket.emit('redirect to login');
+      }
+    }else{
+      // failed to get cookie
+      socket.emit('redirect to login');
+    }
+  }else{
+    // failed to get cookie
+    socket.emit('redirect to login');
+  }
+
+  socket.emit('init', JSON.stringify(player_sessions[username]));
+
+  // more functionalities?
+
+})
+
+function nextPlayer(session){
+  switch(session['turn']){
+    case 'p1':
+      // to player 2
+      session['turn'] = 'p2';
+      break;
+    case 'p2':
+      // to player 3
+      session['turn'] = 'p3';
+      break;
+    case 'p3':
+      // to dealer
+      session['turn'] = 'dealer';
+      break;
+    case 'dealer':
+      // to o1
+      session['turn'] = 'p1';
+      break;
+  }
 }
 
+function dealCard(session){
+  // get turn
+  var turn = session['turn'];
+  // if dealer's
+  if(turn === 'dealer'){
+    session['dealer']['hand'].push(session['deck'].pop());
+  }else{ // if player's
+    var username = session[turn];
+    session['players'][username]['hand'].push(session['deck'].pop());
+  }
+}
+function dealDealerCard(session){
+  
+}
 
+/**
+ * Game session logic
+ */
+game.on('connection', function(socket){
+  var username = '';
+  var sessionID = -1;
+  if(socket.handshake.headers.cookie == undefined){
+    console.log('cookies detected. checking cookies');
+    var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
+    console.log(socket_cookie);
+    if(socket_cookie){
+      if (socket_cookie['authorized']) {
+        username = socket_cookie['username'];
+        sessionID = socket_cookie['sessionID'];
+      }else{
+        //redirect back to login
+      }
+    }else{
+      //redirect back to login
+    }
+  }else{
+    //redirect back to login
+  }
+  // TODO - get nickname here
+  // Shuffle, x3 in total since 3 players expected
+  shuffle_deck(sessionID);
+  var session = game_sessions[sessionID];
+  var channelname = "#" + sessionID;
+  // join game channel for broadcast
+  socket.join(channelname);
+  
+  /**
+   * Gameflow:
+   * Deck shuffled
+   * Place bet & ready
+   * distribute cards
+   * p1 turn
+   * p2 turn
+   * p3 turn
+   * dealer turn
+   */
+  /**
+   * A turn has:
+   * card deal
+   * stay/pass
+   * split
+   */
+
+  // ready to start
+  socket.on('ready', function(betAmount){
+    game.to(channelname).emit('lock in', username);
+    session['players'][username]['bet'] = betAmount;
+  });
+
+  // when all bets are placed
+  socket.on('card distribution request', function(){
+    if(username === session['host']){//only the host can request
+      // first distribution
+      // loop through 2 whole cycles
+      for (var i = 0; i < 8; i++) {
+        dealCard(session);
+        nextPlayer(session);
+      }
+      // tell all to play card distribution animation
+      game.to(channelname).emit('init card distribution', JSON.stringify(session));
+    }
+  });
+
+  // when card deal is requested
+  socket.on('card deal', function(){
+    dealCard(session);
+    // card dealt, to user, new session info
+    game.to(channelname).emit('card dealt', username, JSON.stringify(session));
+  })
+
+  // stay/pass
+  socket.on('pass', function(){
+    nextPlayer(session);
+    // next player, new session
+    game.to(channelname).emit('next player', JSON.stringify(session));
+  })
+
+  socket.on('split', function(){
+    // do something for split
+  })
+
+
+})
 
 
 io.on('connection', function(socket){
@@ -65,7 +431,7 @@ io.on('connection', function(socket){
   socket.on('disconenct', function(){
 
   })
-}
+})
 
 
 
@@ -81,11 +447,6 @@ io.on('connection', function(socket){
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-
-/**
- * Creates a new game session
- */
 
 
 
