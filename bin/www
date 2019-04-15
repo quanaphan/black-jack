@@ -142,9 +142,9 @@ populate_game_sessions(1, session_capacity);
 login.on('connection', function(socket){
   console.log(socket.id + 'connected')
   // if has cookies
-  if(socket.handshake.headers.cookie){
+  if(socket.handshake.headers.cookie == undefined){
     console.log('cookies detected. checking cookies');
-    var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
+    var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
     console.log(socket_cookie);
     if(socket_cookie){
       if (socket_cookie['authorized']) {
