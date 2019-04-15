@@ -3,7 +3,8 @@
 $(document).ready(function(){
 	var socket = io('/login');
 
-	$('#login').click(function(){
+	$('#login').click(function(event){
+		event.preventDefault();
     	login($('#username').val(), $('#password').val());
   	});
 
