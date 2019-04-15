@@ -171,8 +171,12 @@ login.on('connection', function(socket){
         console.log('login failure');
         socket.emit('login failure');
       }
+      return result;
     });
     console.log('authorized = ' + authorize);
+    while(!authorize){
+      console.log('YOLOLOLOL');
+    }
 
     // var authorize = new Promise(function(resolve,reject){
     //   var result = validate(username,password);
