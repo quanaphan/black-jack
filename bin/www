@@ -158,9 +158,8 @@ login.on('connection', function(socket){
 
   socket.on('login', function(username, password){
     var validate = database.validateUser;
-    var authorize = validate(username,password)
-      .then(function(result){
-        console.log('received ' + result);
+    var authorize = validate(username,password).then(function(result){
+      console.log('received ' + result);
       if (result){
         // success, load user from DB and emit success msg
         load_user(username);
