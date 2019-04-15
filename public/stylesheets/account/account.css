@@ -2,8 +2,8 @@ body {
   height: 100vh;
   font-family: Arial, Helvetica, sans-serif;
   background-image: url("http://cheerspokernh.com/wp-content/uploads/2018/02/bigstock-poker-table-background-26587844-2-1.jpg");
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   background-size: cover;
 }
 
@@ -24,4 +24,9 @@ h1, h2, h3{
 
 ul{
   color:white;
+}
+
+#logout_container{
+  margin-top: 30px;
+  margin-left: 30px;
 }
