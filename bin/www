@@ -157,7 +157,8 @@ login.on('connection', function(socket){
   }
 
   socket.on('login', function(username, password){
-    var authorize = database.validateUser(username, password);//call function to authorize access
+    var validate = database.validateUser;
+    var authorize = validate(username, password);//call function to authorize access
     console.log('received ' + authorize);
     if (authorize === true){
       // success, load user from DB and emit success msg
@@ -299,7 +300,7 @@ game.on('connection', function(socket){
 
   socket.on('card distribution request', function(){
     if(username === session['host']){//only the host can request
-
+      dealCard(session, username);
     }
   })
 
