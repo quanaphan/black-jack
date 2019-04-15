@@ -137,6 +137,7 @@ var load_user = function(key){
     player_sessions[key]['balance'] = result;
   });// load from DB
   player_sessions[key]['username'] = key;
+  console.log("load has finished");
 }
 
 var update_nick = function(key, nickname){
@@ -203,7 +204,14 @@ lobby.on('connection', function(socket){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
         console.log("user connected to lobby is '" + username + "'");
+        console.log("calling load");
         load_user(username);
+        setTimeout(function(){
+          console.log("SENDING " + player_sessions[username]);
+          socket.emit('init', JSON.stringify(player_sessions[username]));
+        }, 15000);
+        //console.log("SENDING " + player_sessions[username]);
+        //socket.emit('init', JSON.stringify(player_sessions[username]));
       }else{
         // failed to get cookie
         socket.emit('redirect to login');
