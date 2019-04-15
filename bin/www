@@ -118,11 +118,20 @@ var shuffle_deck = function(id){
  */
 var load_user = function(key){
   player_sessions[key] = {};
-  player_sessions[key]['nickname'] = name;// load nickname from DB
-  player_sessions[key]['balance'] = 100;// load from DB
+  player_sessions[key]['nickname'] = database.getUserNickname(key);// load nickname from DB
+  player_sessions[key]['balance'] = database.getUserBalance(key);// load from DB
   player_sessions[key]['username'] = key;
 }
 
+var update_nick = function(key, nickname){
+  database.setUserNickname(key, nickname);
+  player_sessions[key]['nickname'] =  nickname;
+}
+
+var update_balance = function(key, balance){
+  database.setUserBalance(key, balance);
+  player_sessions[key]['balance'] = balance;
+}
 //init game session, starts from 1
 populate_game_sessions(1, session_capacity);
 
@@ -266,24 +275,24 @@ game.on('connection', function(socket){
  * Gameflow:
  * Deck shuffled
  * Place bet & ready
- * play
  * distribute cards
  * p1 turn
  * p2 turn
  * p3 turn
  * dealer turn
  */
-  socket.
 
 
   // ready to start
-  socket.on('ready', function(){
+  socket.on('ready', function(betAmount){
     game.to(channelname).emit('lock in', username);
+    session[username]['bet'] = betAmount;
+  });
 
+  socket.on('card distribution request', function(){
+    if(username === session['host']){//only the host can request
 
-
-
-
+    }
   })
 
 
@@ -294,6 +303,7 @@ game.on('connection', function(socket){
 io.on('connection', function(socket){
   // On new socket connection
   socket.on('disconenct', function(){
+    
   })
 })
 
