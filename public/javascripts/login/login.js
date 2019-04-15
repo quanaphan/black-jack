@@ -2,7 +2,7 @@
 
 $(document).ready(function(){
 	var socket = io('/login');
-
+	var usr = '';
 	$('#login').click(function(event){
 		event.preventDefault();
     	login($('#username').val(), $('#password').val());
@@ -10,6 +10,7 @@ $(document).ready(function(){
 
 	function login(username, password){
 		console.log("sending " + username + " " + password);
+		usr = username;
 		socket.emit('login', username, password);
 	}
 
@@ -17,9 +18,9 @@ $(document).ready(function(){
 		console.log("success");
 		var now = new Date();
        	now.setTime(now.getTime() + (246060*1000)); // valid for 1 day
-        cookie_string = 'chat-name=' + identity['name'] +'; expires=' + now.toUTCString() + '; path=/';
+        cookie_string = 'username=' + usr +'; expires=' + now.toUTCString() + '; path=/';
         document.cookie = cookie_string;
-        cookie_string = 'chat-color=' + identity['color'] +'; expires=' + now.toUTCString() + '; path=/';
+        cookie_string = 'authorized=' + true +'; expires=' + now.toUTCString() + '; path=/';
         document.cookie = cookie_string;
 		window.location.href = "/lobby";
 
