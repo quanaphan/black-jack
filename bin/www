@@ -203,13 +203,16 @@ lobby.on('connection', function(socket){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
       }else{
-        //redirect back to login
+        // failed to get cookie
+        socket.emit('redirect to login');
       }
     }else{
-      //redirect back to login
+      // failed to get cookie
+      socket.emit('redirect to login');
     }
   }else{
-    //redirect back to login
+    // failed to get cookie
+    socket.emit('redirect to login');
   }
 
   console.log('connected');
@@ -344,7 +347,12 @@ game.on('connection', function(socket){
    * p3 turn
    * dealer turn
    */
-
+  /**
+   * A turn has:
+   * card deal
+   * stay/pass
+   * split
+   */
 
   // ready to start
   socket.on('ready', function(betAmount){
@@ -364,6 +372,11 @@ game.on('connection', function(socket){
       // tell all to play card distribution animation
       game.to(channelname).emit('init card distribution', JSON.stringify(session));
     }
+  });
+
+  // when card deal is requested
+  socket.on('card deal', function(){
+
   })
 
 
