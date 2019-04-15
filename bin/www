@@ -62,7 +62,7 @@ var populate_game_sessions = function(start,end){
 }
 
 //init game session, starts from 1
-populate_game_sessions(1, session_capacity);
+populate_game_sessions(0, session_capacity);
 
 
 /**
