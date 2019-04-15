@@ -1,7 +1,7 @@
 
 
 $(document).ready(function(){
-	var socket = io();
+	var socket = io('/login');
 
 	$('#login').click(function(){
     	login($('#username').val(), $('#password').val());
@@ -10,13 +10,15 @@ $(document).ready(function(){
 	function login(username, password){
 		console.log("sending " + username + " " + password);
 		socket.emit('login', username, password);
-		socket.on('login success', function(){
-
-		})
-		socket.on('login failure', function(){
-
-		})
 	}
+
+	socket.on('login success', function(){
+
+		console.log("success");
+	});
+	socket.on('login failure', function(){
+		console.log("failed");
+	});
 
 
 

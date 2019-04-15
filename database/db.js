@@ -312,7 +312,8 @@ module.exports = {
 	setUserNickname,
 	getUserBalance,
 	getUserNickname,
-	addUser
+	addUser,
+	validateUser
 }
 
 
