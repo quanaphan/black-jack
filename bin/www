@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('black-jack:server');
 var http = require('http');
+const cookie = require('cookie');
 /**
  * Get port from environment and store in Express.
  */
@@ -148,7 +149,7 @@ var update_balance = function(key, balance){
 login.on('connection', function(socket){
   console.log(socket.id + 'connected')
   // if has cookies
-  if(socket.handshake.headers.cookie == undefined){
+  if(socket.handshake.headers.cookie){
     console.log('cookies detected. checking cookies');
     var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
     console.log(socket_cookie);
@@ -187,7 +188,8 @@ login.on('connection', function(socket){
 lobby.on('connection', function(socket){
   //should have credentials
   var username = '';
-  if(socket.handshake.headers.cookie == undefined){
+  console.log(socket.handshake.headers.cookie);
+  if(socket.handshake.headers.cookie){
     console.log('cookies detected. checking cookies');
     var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
     console.log(socket_cookie);

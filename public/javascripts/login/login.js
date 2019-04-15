@@ -2,7 +2,7 @@
 
 $(document).ready(function(){
 	var socket = io('/login');
-	var usr = '';
+	var usr = ''; //load old cookie
 	$('#login').click(function(event){
 		event.preventDefault();
     	login($('#username').val(), $('#password').val());
