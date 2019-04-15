@@ -132,6 +132,7 @@ var update_balance = function(key, balance){
   database.setUserBalance(key, balance);
   player_sessions[key]['balance'] = balance;
 }
+
 //init game session, starts from 1
 populate_game_sessions(1, session_capacity);
 
@@ -156,7 +157,7 @@ login.on('connection', function(socket){
   }
 
   socket.on('login', function(username, password){
-    var authorize = false;//call function to authorize access
+    var authorize = database.validateUser(username, password);//call function to authorize access
     if (authorize){
       // success, load user from DB and emit success msg
       load_user(username);
@@ -240,6 +241,12 @@ lobby.on('connection', function(socket){
     console.log('disconnect');
   })
 })
+
+function dealCard(session, username){
+
+}
+
+
 /**
  * Game session logic
  */
@@ -271,16 +278,16 @@ game.on('connection', function(socket){
   // join game channel for broadcast
   socket.join(channelname);
   
-/**
- * Gameflow:
- * Deck shuffled
- * Place bet & ready
- * distribute cards
- * p1 turn
- * p2 turn
- * p3 turn
- * dealer turn
- */
+  /**
+   * Gameflow:
+   * Deck shuffled
+   * Place bet & ready
+   * distribute cards
+   * p1 turn
+   * p2 turn
+   * p3 turn
+   * dealer turn
+   */
 
 
   // ready to start
@@ -303,7 +310,7 @@ game.on('connection', function(socket){
 io.on('connection', function(socket){
   // On new socket connection
   socket.on('disconenct', function(){
-    
+
   })
 })
 
