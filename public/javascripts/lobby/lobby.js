@@ -1,6 +1,13 @@
 $(document).ready(function(){
 	var socket = io('/lobby');
 
+	var player = {};
+	socket.on('init', function(sessionPlayer){
+		console.log("inside init");
+		player = JSON.parse(sessionPlayer);
+		console.log(player);
+	});
+
 	$('#createRoom').click(function(event){
 		event.preventDefault();
 		console.log("creating event");
@@ -17,6 +24,14 @@ $(document).ready(function(){
 		console.log("lobby updated");
 		gameSessions = JSON.parse(game_sessions);
 		console.log(gameSessions);
+		$('#gamerooms').empty();
+		var count = Object.keys(gameSessions).length;
+		var i;
+		for(i = 0; i < count; i++){
+			if(gameSessions[i]['active']){
+				$('#gamerooms').append($('<li>').text("Room#" + gameSessions[i]['id'] + " " + gameSessions[i]['title'] + " " + gameSessions[i]['capacity'] + "/3"));
+			}
+		}
 
 	});
 
@@ -29,6 +44,7 @@ $(document).ready(function(){
 	});
 
 	socket.on('join fail', function(){
+		//TODO logic for when trying to join room that is full
 		console.log("join failed");
 	});
 
@@ -63,4 +79,8 @@ $(document).ready(function(){
 		window.location.href = "/account";
 	}
 	
+	$('#game-create-enter').click(function () {
+        let roomName = $('#newRoomModal #room-name').val();
+        $('#newRoomModal #room-name').val("");
+    });
 });
