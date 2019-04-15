@@ -158,13 +158,9 @@ login.on('connection', function(socket){
 
   socket.on('login', function(username, password){
     var validate = database.validateUser;
-    var authorize = new Promise(function(resolve,reject){
-      var result = validate(username,password);
-      setTimeout(function(){
-        resolve(result);
-      }, 500);
-    }).then(function(result){
-      console.log('received ' + result);
+    var result;
+    var authorize = validate(username,password, function(result){
+      console.log('result = ' + result);
       if (result){
         // success, load user from DB and emit success msg
         load_user(username);
@@ -175,7 +171,27 @@ login.on('connection', function(socket){
         console.log('login failure');
         socket.emit('login failure');
       }
-    })
+    });
+    console.log('authorized = ' + authorize);
+
+    // var authorize = new Promise(function(resolve,reject){
+    //   var result = validate(username,password);
+    //   setTimeout(function(){
+    //     resolve(result);
+    //   }, 500);
+    // }).then(function(result){
+    //   console.log('received ' + result);
+    //   if (result){
+    //     // success, load user from DB and emit success msg
+    //     load_user(username);
+    //     console.log('login success');
+    //     socket.emit('login success');
+    //   } else{
+    //     // failed, emit failure msg
+    //     console.log('login failure');
+    //     socket.emit('login failure');
+    //   }
+    // })
   })
 })
 
