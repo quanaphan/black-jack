@@ -160,7 +160,9 @@ login.on('connection', function(socket){
     var validate = database.validateUser;
     var authorize = new Promise(function(resolve,reject){
       var result = validate(username,password);
-      resolve(result);
+      setTimeout(function(){
+        resolve(result);
+      }, 500);
     }).then(function(result){
       console.log('received ' + result);
       if (result){
