@@ -157,7 +157,7 @@ login.on('connection', function(socket){
   }
 
   socket.on('login', function(username, password){
-    var validate = database.validateUser;
+    var validate = new database.validateUser;
     var authorize = validate(username, password);//call function to authorize access
     console.log('received ' + authorize);
     if (authorize === true){
@@ -179,7 +179,7 @@ lobby.on('connection', function(socket){
   var username = '';
   if(socket.handshake.headers.cookie){
     console.log('cookies detected. checking cookies');
-    var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
+    var socket_cookie = cookie.parse(socket.handshake.headers.cookie);
     console.log(socket_cookie);
     if(socket_cookie){
       if (socket_cookie['authorized']) {
@@ -244,9 +244,10 @@ lobby.on('connection', function(socket){
   })
 })
 
-function dealCard(session, username){
+function dealplayerCard(session, username){
   session['player'][username]['hand'].push(session['deck'].pop());
 }
+function dealdealerCard
 
 
 /**
