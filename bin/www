@@ -118,8 +118,13 @@ var shuffle_deck = function(id){
  */
 var load_user = function(key){
   player_sessions[key] = {};
-  player_sessions[key]['nickname'] = database.getUserNickname(key);// load nickname from DB
-  player_sessions[key]['balance'] = database.getUserBalance(key);// load from DB
+  database.getUserNickname(key, function(result){
+    player_sessions[key]['nickname'] = result;
+  });// load nickname from DB
+  player_sessions[key]['balance'] = 
+  database.getUserBalance(key, function(result){
+    player_sessions[key]['balance'] = result;
+  });// load from DB
   player_sessions[key]['username'] = key;
 }
 

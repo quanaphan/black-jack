@@ -82,13 +82,13 @@ var validateUser = function(userName, password, cb){
 				}else if(result != null){
 					console.log("success find function");
 					if(result.username === userName && result.password === password){
-						return cb(true);
+						cb(true);
 					}else{
-						return cb(false);
+						cb(false);
 					}
 				}else{
 					console.log("user does not exists");
-					return cb(false);
+					cb(false);
 				}
 			}));
 			client.close();
@@ -153,7 +153,7 @@ var addUser = function(userName){
 	
 }
 
-var getUserNickname = function(userName){
+var getUserNickname = function(userName, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
 
@@ -171,7 +171,7 @@ var getUserNickname = function(userName){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					return result.nickName;
+					cb(result.nickName);
 				}else{
 					console.log("user does not exists");
 				}
@@ -192,7 +192,7 @@ var getUserNickname = function(userName){
 		});
 }
 
-var getUserBalance = function(userName){
+var getUserBalance = function(userName, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
 
@@ -210,7 +210,7 @@ var getUserBalance = function(userName){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					return result.balance;
+					cb(result.balance);
 				}else{
 					console.log("user does not exists");
 				}
