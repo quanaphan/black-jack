@@ -104,10 +104,7 @@ var create_session = function(id, title, username){
   game_sessions[id]['players'][username]['username'] = username;
   game_sessions[id]['active'] = true;
   game_sessions[id]['capacity'] = 1;
-  console.log(cards);
   game_sessions[id]['deck'] = [...cards];
-  console.log("deck ");
-  console.log(game_sessions[id]['deck']);
 }
 
 /**
@@ -159,7 +156,7 @@ login.on('connection', function(socket){
     if(socket_cookie){
       if (socket_cookie['authorized']) {
         //add to player list & redirect
-        load_user(socket_cookie['username']) = {};
+        load_user(socket_cookie['username']);
         // redirect to lobby
         socket.emit('login success');
       }
