@@ -1,8 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <!-- socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- JQuery & Bootstrap4 -->
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.js"
+            integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <!-- stylesheet -->
     <link href="/stylesheets/login/login.css" rel="stylesheet" type="text/css">
+
+    <!-- script -->
+    <script src="/javascripts/login/login.js"></script>
+
   </head>
   <script>
   // Get the modal/popup
@@ -15,9 +35,6 @@
     }
   }
 
-  document.getElementById("login").onclick = function () {
-    location.href = "lobby";
-  };
 
   </script>
   <body>
@@ -30,17 +47,17 @@
     class="close" title="Close Modal">&times;</span>
 
       <!-- Modal Content -->
-      <form class="modal-content animate" action="/action_page.php">
+      <form class="modal-content animate">
 
         <div class="container">
           <label for="uname"><b>Username</b></label>
-          <input type="text" placeholder="Enter Username" name="uname" required>
+          <input id="username" type="text" placeholder="Enter Username" name="uname" required>
 
           <label for="psw"><b>Password</b></label>
-          <input type="password" placeholder="Enter Password" name="psw" required>
+          <input id="password" type="password" placeholder="Enter Password" name="psw" required>
 
-          <!-- input login logic when press button instead of just loading lobby page-->
-          <button onclick="location.href = '/lobby.html';" id="login">Login</button>
+          <!-- input login logic when press button instead of just loading lobby page  onclick="location.href = '/lobby';"-->
+          <button id="login">Login</button>
         </div>
 
         <div class="container" style="background-color:#f1f1f1">
