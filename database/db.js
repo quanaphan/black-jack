@@ -63,7 +63,7 @@ var connectToDatabase = function(){
 	};
 
 	
-var validateUser = function(userName, password){
+var validateUser = function(userName, password, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
 
@@ -82,13 +82,13 @@ var validateUser = function(userName, password){
 				}else if(result != null){
 					console.log("success find function");
 					if(result.username === userName && result.password === password){
-						return false;
+						return cb(true);
 					}else{
-						return false;
+						return cb(false);
 					}
 				}else{
 					console.log("user does not exists");
-					return false;
+					return cb(false);
 				}
 			}));
 			client.close();

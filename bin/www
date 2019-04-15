@@ -159,7 +159,7 @@ login.on('connection', function(socket){
   socket.on('login', function(username, password){
     var validate = database.validateUser;
     var result;
-    var authorize = validate(username,password, function(result){
+    validate(username, password, function(result){
       console.log('result = ' + result);
       if (result){
         // success, load user from DB and emit success msg
@@ -171,13 +171,7 @@ login.on('connection', function(socket){
         console.log('login failure');
         socket.emit('login failure');
       }
-      return result;
-    });
-    console.log('authorized = ' + authorize);
-    while(!authorize){
-      console.log('YOLOLOLOL');
-    }
-
+    })
     // var authorize = new Promise(function(resolve,reject){
     //   var result = validate(username,password);
     //   setTimeout(function(){
