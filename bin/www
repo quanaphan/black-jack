@@ -208,7 +208,10 @@ lobby.on('connection', function(socket){
         username = socket_cookie['username'];
         console.log("user connected to lobby is '" + username + "'");
         load_user(username, function(){
-          socket.emit('init', JSON.stringify(player_sessions[username]));
+          socket.emit('init', JSON.stringify(player_sessions[username]));  
+          //send out game lobby list
+          socket.emit('lobby update', JSON.stringify(game_sessions));
+          //need leaderboard stuffs here
         });
       }else{
         // failed to get cookie
@@ -225,9 +228,6 @@ lobby.on('connection', function(socket){
 
   console.log('connected');
   var connected_session = -1;
-  //send out game lobby list
-  socket.emit('lobby update', JSON.stringify(game_sessions));
-  //need leaderboard stuffs here
 
   //requesting a lobby list refresh
   socket.on('refresh', function(){
@@ -348,6 +348,12 @@ function dealCard(session){
 game.on('connection', function(socket){
   var username = '';
   var sessionID = -1;
+  // Shuffle, x3 in total since 3 players expected
+  shuffle_deck(sessionID);
+  var session = {};
+  var channelname = '';
+  // join game channel for broadcast
+  socket.join(channelname);
   if(socket.handshake.headers.cookie == undefined){
     console.log('cookies detected. checking cookies');
     var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
@@ -356,8 +362,12 @@ game.on('connection', function(socket){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
         sessionID = socket_cookie['sessionID'];
+        session = game_sessions[sessionID];
+        channelname = "#" + sessionID;
+
         load_user(username, function(){
-          socket.emit('init', JSON.stringify(player_sessions[username]));
+          socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify);
+
         })
       }else{
         //redirect back to login
@@ -369,12 +379,6 @@ game.on('connection', function(socket){
     //redirect back to login
   }
   // TODO - get nickname here
-  // Shuffle, x3 in total since 3 players expected
-  shuffle_deck(sessionID);
-  var session = game_sessions[sessionID];
-  var channelname = "#" + sessionID;
-  // join game channel for broadcast
-  socket.join(channelname);
   
   /**
    * Gameflow:
