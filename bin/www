@@ -26,7 +26,7 @@ var server = http.createServer(app);
  */
 var io = require('socket.io')(server);
 
-/**
+/***************************************************************************************************
  * Socket logics
  */
 // config + init
@@ -62,7 +62,7 @@ var populate_game_sessions = function(start,end){
 }
 
 //init game session, starts from 1
-populate_game_sessions(0, session_capacity);
+populate_game_sessions(1, session_capacity);
 
 
 /**
@@ -149,7 +149,7 @@ var update_balance = function(key, balance){
   player_sessions[key]['balance'] = balance;
 }
 
-/**
+/***************************************************************************************************
  * Login socket logics
  */
 login.on('connection', function(socket){
@@ -188,7 +188,7 @@ login.on('connection', function(socket){
   })
 })
 
-/**
+/***************************************************************************************************
  * Lobby socket logics
  */
 lobby.on('connection', function(socket){
@@ -270,7 +270,7 @@ lobby.on('connection', function(socket){
   })
 })
 
-/**
+/***************************************************************************************************
  * Profile/account socket logics
  */
 account.on('connection', function(socket){
@@ -335,11 +335,8 @@ function dealCard(session){
     session['players'][username]['hand'].push(session['deck'].pop());
   }
 }
-function dealDealerCard(session){
-  
-}
 
-/**
+/***************************************************************************************************
  * Game session logic
  */
 game.on('connection', function(socket){
@@ -422,13 +419,53 @@ game.on('connection', function(socket){
   })
 
   socket.on('split', function(){
-    // do something for split
+  // do something for split
+  // dunno this yet, have to think about it
+  // have to consider 2x Aces scenarios
+  })
+  
+  socket.on('chicken dinner', function(){
+  // do sth on chicken dinner
+  // to be considered later
+  // have to check if dealer is also black-jack -> skip to endgame logic 
+  // insurance bets, maibe?
   })
 
-
+  // game end, total up
+  socket.on('tally score'. function(){
+    if(username === session['host']){
+      // only host can request a tally
+      
+      // dealer's turn
+      // add dealer logics here
+      var dealer = session['dealer'];
+      var score = calculateHandWithAces(dealer['hand']);
+      // if score is less than 17
+      while(score < 17){
+        // turn for be dealer's at this point, printing just in case
+        console.log(session['turn']);
+        // draw another card
+        dealCard(session);
+        // calc score again
+        score = calculateHandWithAces(dealer['hand']);
+      }
+      // done dealer's draws, emitting update
+      game.to(channelname).emit('dealer drawn', JSON.stringify(session));
+      // tally up players' hand
+      for(var player in session['players']){
+        var score = calculateHandWithAces(session['players'][player][hand]);
+        session['player'][player]['score'] = score;
+      }
+      // check against dealer score
+      
+      // declare victory/defeat (spam emit on channel)
+      // also have to consider
+      // Save balance to DB according to win/lose w/ placed bet
+    }
+  }
 })
 
-
+// not needed, probably
 io.on('connection', function(socket){
   // On new socket connection
   socket.on('disconenct', function(){
@@ -452,6 +489,59 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 
+/**
+ * calculateHandTotals
+ *
+ * calculates the the total value fo a hand: need ace logic
+ *
+ * */
+
+function calculateHandTotals(hand) {
+    let sum = 0;
+
+    for (let i = 0; i < hand.length; i++) {
+        sum += hand[i].value;
+    }
+    return sum;
+}
+
+/**
+ * Returns boolean value if the hand contains an ace
+ * @param hand
+ * @returns {boolean}
+ */
+
+function hasUnreducedAce(hand) {
+
+    for (let i = 0; i < hand.length; i++) {
+        if ((hand[i].name === "ace") && (hand[i].value === 11)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+/**
+ * finds the aces in the hand that has not already been reduced and sets its value to 1
+ *
+ * @param hand
+ *
+ */
+function calculateHandWithAces(hand) {
+    let total = calculateHandTotals(hand);
+
+    while (hasUnreducedAce(hand) && total > 21) {
+        for (let i = 0; i < hand.length; i++) {
+            if (hand[i].name === "ace" && hand[i].value === 11) {
+                hand[i].value = 1;
+
+               break;
+            }
+        }
+    total = calculateHandTotals(hand);
+    }
+}
 
 /**
  * Generate random alphanumeric
