@@ -1,18 +1,9 @@
 $(document).ready(function(){
 	var socket = io('/lobby');
 
-	$('#login').click(function(event){
+	$('#createRoom').click(function(event){
 		event.preventDefault();
-    	login($('#username').val(), $('#password').val());
-  	});
-
-	function login(username, password){
-		console.log("sending " + username + " " + password);
-		socket.emit('login', username, password);
-	}
-
-	$('#creatRoom').click(function(even){
-		event.preventDefault();
+		console.log("creating event");
 		host();
 	});
 
