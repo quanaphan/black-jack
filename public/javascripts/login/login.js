@@ -15,6 +15,12 @@ $(document).ready(function(){
 
 	socket.on('login success', function(){
 		console.log("success");
+		var now = new Date();
+       	now.setTime(now.getTime() + (246060*1000)); // valid for 1 day
+        cookie_string = 'chat-name=' + identity['name'] +'; expires=' + now.toUTCString() + '; path=/';
+        document.cookie = cookie_string;
+        cookie_string = 'chat-color=' + identity['color'] +'; expires=' + now.toUTCString() + '; path=/';
+        document.cookie = cookie_string;
 		window.location.href = "/lobby";
 
 	});
