@@ -11,19 +11,21 @@ $(document).ready(function(){
 		player = JSON.parse(sessionPlayer);
 		console.log(player);
 
-		var percentage = player['wins']/(player['wins'] + player['loses']);
+		var percentage = 0;
+		if((player['wins'] + player['loses']) !== 0){
+			percentage = player['wins']/(player['wins'] + player['loses']);
+		}
 		//console.log(percentage.toFixed(2));
 		$('#user_name').text(player['nickname']);
 		$('#cash').text("Balance: $" + player['balance']);
 		$('#wins').text("Wins: " + player['wins']);
 		$('#loses').text("Loses: " + player['loses']);
-		$('#winp').text("Win %: " + percentage.toFixed(2));
+		$('#winp').text("Win %: " + percentage.toFixed(2) + "%");
 		$('#rank').text("Rank: ");
 	});
 
 	var leaderboard = {};
 	socket.on('rankings', function(list){
-		console.log("INSIDE RANKINGS");
 		leaderboard = JSON.parse(list);
 		var i;
 		var length = leaderboard.length;	//if we want more than 3 to show
