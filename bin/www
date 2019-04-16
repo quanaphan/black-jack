@@ -277,8 +277,6 @@ lobby.on('connection', function(socket){
     }
   })
 
-
-
   socket.on('disconenct', function(){
     // do something
     console.log('disconnect from lobby by ' + username);
