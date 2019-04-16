@@ -117,7 +117,7 @@ var addUser = function(userName){
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
    
-			console.log('Connected...');
+			console.log('Connected...Adding user');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
 			collection.findOne({username: userName}, (function(err, result){
@@ -163,7 +163,7 @@ var getUserNickname = function(userName, cb){
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
-			console.log('Connected...');
+			console.log('Connected...Getting nickname');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
 			collection.findOne({username: userName}, (function(err, result){
@@ -202,7 +202,7 @@ var getUserBalance = function(userName, cb){
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
-			console.log('Connected...');
+			console.log('Connected... Getting balance');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
 			collection.findOne({username: userName}, (function(err, result){
@@ -241,7 +241,7 @@ var setUserNickname = function(userName, nickName){
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
-			console.log('Connected...');
+			console.log('Connected...Setting nickname');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
 			var query = { username: userName };
@@ -279,7 +279,7 @@ var setUserBalance = function(userName, newBalance){
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
-			console.log('Connected...');
+			console.log('Connected...Setting balance');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
 			var query = { username: userName };

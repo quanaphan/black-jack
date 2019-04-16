@@ -157,7 +157,7 @@ var update_balance = function(key, balance){
  * Login socket logics
  */
 login.on('connection', function(socket){
-  console.log(socket.id + 'connected')
+  console.log(socket.id + ' connected')
   // if has cookies
   if(socket.handshake.headers.cookie){
     console.log('cookies detected. checking cookies');
@@ -166,9 +166,10 @@ login.on('connection', function(socket){
     if(socket_cookie){
       if (socket_cookie['authorized']) {
         //add to player list & redirect
-        load_user(socket_cookie['username']);
-        // redirect to lobby
-        socket.emit('login success');
+        load_user(socket_cookie['username'], function(){
+          // redirect to lobby
+          socket.emit('login success');
+        });
       }
     }
   }
@@ -180,9 +181,10 @@ login.on('connection', function(socket){
       console.log('result = ' + result);
       if (result){
         // success, load user from DB and emit success msg
-        load_user(username);
-        console.log('login success');
-        socket.emit('login success');
+        load_user(username, function(){
+          console.log('login success');
+          socket.emit('login success');
+        });
       } else{
         // failed, emit failure msg
         console.log('login failure');
@@ -208,6 +210,7 @@ lobby.on('connection', function(socket){
         username = socket_cookie['username'];
         console.log("user connected to lobby is '" + username + "'");
         load_user(username, function(){
+          console.log('Finished loading users. spamming emits')
           socket.emit('init', JSON.stringify(player_sessions[username]));  
           //send out game lobby list
           socket.emit('lobby update', JSON.stringify(game_sessions));
