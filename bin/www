@@ -298,7 +298,6 @@ account.on('connection', function(socket){
             socket.emit('rankings', JSON.stringify(result));
           })
         });
-        
       }else{
         // failed to get cookie
         socket.emit('redirect to login');
