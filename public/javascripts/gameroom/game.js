@@ -97,22 +97,26 @@ $(document).ready(function () {
 
         initialDeal(session);
 
-        let turn =  session['turn'];
+        let turn = session['turn'];
         let username = session[turn];
+
+        showAlert("Place Your Bets");
+        startLockInTimer();
+        hideAlert();
+
 
         if (username === player['username']) {
             enableAllButtons();
+            turnTimer();
         }
-        $("#hit-button").click(function(){
+        $("#hit-button").click(function () {
             socket.emit('card deal');
         })
 
         $("#stand-button").click(function () {
             socket.emit('pass');
         });
-        showAlert("Place Your Bets");
-        startLockInTimer();
-        hideAlert();
+
     });
 
     // actual game memes now
@@ -147,7 +151,7 @@ $(document).ready(function () {
         // do some animation
         dealCardAnimationSingle(hand, location, new_card, session);
 
-        $("#hit-button").click(function(){
+        $("#hit-button").click(function () {
             socket.emit('card deal');
         })
 
@@ -163,7 +167,7 @@ $(document).ready(function () {
 
         session = JSON.parse(session_info);
 
-        let turn =  session['turn'];
+        let turn = session['turn'];
         let currPlayer = session[turn];
 
         if (currPlayer === player['username']) {
@@ -185,30 +189,32 @@ $(document).ready(function () {
 
     // 'win' event, username. username won, change their graphic accordingly. Will receive other players'
     socket.on('win', function (username) {
-        if (username === player['username']){
+        if (username === player['username']) {
             setTimeout(function () {
-                showAlert(username +"Won!");
+                showAlert(username + "Won!");
             }, 2000);
             hideAlert();
         }
+    }
     // 'lose' event, username. username lost, change their graphic accordingly. Will receive other players'
     socket.on('lose', function (username) {
         // username lost, do animation for <username>
-        if (username === player['username']){
+        if (username === player['username']) {
             setTimeout(function () {
-                showAlert(username +"Lost");
+                showAlert(username + "Lost");
             }, 2000);
             hideAlert();
         }
     });
     // 'draw' maibe?
     socket.on('draw', function (username) {
-        if (username === player['username']){
+        if (username === player['username']) {
             setTimeout(function () {
                 showAlert("Draw!");
             }, 2000);
             hideAlert();
         }
+
     });
 
 
@@ -226,8 +232,22 @@ $(document).ready(function () {
     };
 
     function startLockInTimer() {
-        //$('#bet-place-toast').toast('show');
+
         let time = 15;
+        let clock = setInterval(function () {
+            $("#timer").text(time);
+            time -= 1;
+            if (time <= 0) {
+                clearInterval(clock);
+
+            }
+        }, 1000);
+
+    }
+
+    function turnTimer() {
+
+        let time = 30;
         let clock = setInterval(function () {
             $("#timer").text(time);
             time -= 1;
@@ -252,6 +272,7 @@ $(document).ready(function () {
         enableButton("#double-down-button");
 
     }
+
     function showAlert(msg) {
         //$('#alert span').toggle(slow);
         $('#alert span').html('<strong>' + msg + '</strong>');
