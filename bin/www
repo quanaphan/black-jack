@@ -168,7 +168,6 @@ login.on('connection', function(socket){
         //add to player list & redirect
         // redirect to lobby
         socket.emit('login success');
-        
       }
     }
   }
@@ -354,7 +353,6 @@ game.on('connection', function(socket){
   var session = {};
   var channelname = '';
   // join game channel for broadcast
-  socket.join(channelname);
   if(socket.handshake.headers.cookie == undefined){
     console.log('cookies detected. checking cookies');
     var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
@@ -365,9 +363,9 @@ game.on('connection', function(socket){
         sessionID = socket_cookie['sessionID'];
         session = game_sessions[sessionID];
         channelname = "#" + sessionID;
-
+        socket.join(channelname);
         load_user(username, function(){
-          socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify);
+          socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session);
 
         })
       }else{
