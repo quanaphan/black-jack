@@ -80,7 +80,7 @@ var reset_session = function(key){
  * Get next avail game session
  */
 var avail_session = function(){
-  for (var i = 1; i <= session_capacity; i++) {
+  for (var i = 0; i <= session_capacity; i++) {
     if(!game_sessions[i]['active']){
       //if game session is avail, return the session key/id
       return i;
