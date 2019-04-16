@@ -289,6 +289,19 @@ button.disabled-button, #lock-bet.disabled-button, button.secondary.disabled-but
     color: black;
     text-align: center;
 }
+#alert {
+    margin: 0 auto;
+    opacity: 0.95;
+    position: relative;
+    text-align: center;
+    top: 34.5%;
+    width: 500px;
+    z-index: 0;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #468847;
+    display:none;
+}
 
 
 @media only screen and (min-device-width: 410px) and (max-device-width: 480px) {

@@ -92,12 +92,27 @@ $(document).ready(function () {
         player1Hand = session['players'][player1]['hand'];
         player2Hand = session['players'][player2]['hand'];
 
-        initialDeal(session);
-        enableAllButtons();
-
         //session updated with initial hand
         // initial animations go here
 
+        initialDeal(session);
+
+        let turn =  session['turn'];
+        let username = session[turn];
+
+        if (username === player['username']) {
+            enableAllButtons();
+        }
+        $("#hit-button").click(function(){
+            socket.emit('card deal');
+        })
+
+        $("#stand-button").click(function () {
+            socket.emit('pass');
+        });
+        showAlert("Place Your Bets");
+        startLockInTimer();
+        hideAlert();
     });
 
     // actual game memes now
@@ -115,24 +130,28 @@ $(document).ready(function () {
         //session updated with the new card
         // this is the new card dealt to <username>
         var hand = session['players'][username]['hand'];
-        var new_card = hand[hand.length-1];
+        var new_card = hand[hand.length - 1];
         var turn = session['turn'];
         var location;
 
-        if(turn === 'p1'){
+        if (turn === 'p1') {
             location = $("#main-user");
-        }else if (turn ==='p2'){
+        } else if (turn === 'p2') {
             location = $("#player1");
-        }
-        else if (turn ==='p3'){
+        } else if (turn === 'p3') {
             location = $("#player2");
-        }else if (turn ==='dealer'){
+        } else if (turn === 'dealer') {
             location = $("#dealer");
         }
+
         // do some animation
         dealCardAnimationSingle(hand, location, new_card, session);
-        
-        $("#stand-button").click(function(){
+
+        $("#hit-button").click(function(){
+            socket.emit('card deal');
+        })
+
+        $("#stand-button").click(function () {
             socket.emit('pass');
         });
     });
@@ -141,7 +160,15 @@ $(document).ready(function () {
 
     // 'next player' event, session details. A pass triggered, new player -> refresh lockout so that next player can interact (check session['turn'])
     socket.on('next player', function (session) {
+
         session = JSON.parse(session_info);
+
+        let turn =  session['turn'];
+        let currPlayer = session[turn];
+
+        if (currPlayer === player['username']) {
+            enableAllButtons();
+        }
         //session updated with correct turn
         // do something, turn on the GUI if turn = you
     });
@@ -158,15 +185,30 @@ $(document).ready(function () {
 
     // 'win' event, username. username won, change their graphic accordingly. Will receive other players'
     socket.on('win', function (username) {
-        // username won, do animation for <username>
-    });
+        if (username === player['username']){
+            setTimeout(function () {
+                showAlert(username +"Won!");
+            }, 2000);
+            hideAlert();
+        }
     // 'lose' event, username. username lost, change their graphic accordingly. Will receive other players'
     socket.on('lose', function (username) {
         // username lost, do animation for <username>
+        if (username === player['username']){
+            setTimeout(function () {
+                showAlert(username +"Lost");
+            }, 2000);
+            hideAlert();
+        }
     });
     // 'draw' maibe?
     socket.on('draw', function (username) {
-        // username draw, do animation for <username>
+        if (username === player['username']){
+            setTimeout(function () {
+                showAlert("Draw!");
+            }, 2000);
+            hideAlert();
+        }
     });
 
 
@@ -197,19 +239,31 @@ $(document).ready(function () {
 
     }
 
-    function disableAllButtons(){
+    function disableAllButtons() {
         disableButton("#hit-button");
         disableButton("#stand-button");
         disableButton("#double-down-button");
 
     }
-    function enableAllButtons(){
+
+    function enableAllButtons() {
         enableButton("#hit-button");
         enableButton("#stand-button");
         enableButton("#double-down-button");
 
     }
+    function showAlert(msg) {
+        //$('#alert span').toggle(slow);
+        $('#alert span').html('<strong>' + msg + '</strong>');
+        $('#alert').fadeIn();
 
+    }
+
+    function hideAlert() {
+        $('#alert').hide();
+
+
+    }
 
 });
 
