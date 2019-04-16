@@ -107,7 +107,7 @@ var validateUser = function(userName, password, cb){
 		});
 }
 
-var addUser = function(userName){
+var addUser = function(userName, psword, nickName){
 	const MongoClient = require('mongodb').MongoClient;
 
 	// replace the uri string with your connection string.
@@ -120,14 +120,14 @@ var addUser = function(userName){
 			console.log('Connected...Adding user');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
-			collection.findOne({username: userName}, (function(err, result){
+			collection.find({username: userName}, (function(err, result){
 				if(err){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
 					console.log("username already exists");
 				}else{
-					collection.insertOne({username: userName}, function(err, result){
+					collection.insertOne({username: userName, password: psword, nickname: nickName, wins: 0, loses: 0}, function(err, result){
 						if(err){
 							console.log("error adding user");
 						}else{
@@ -171,7 +171,7 @@ var getUserNickname = function(userName, cb){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					cb(result.nickName);
+					cb(result.nickname);
 				}else{
 					console.log("user does not exists");
 				}
@@ -330,6 +330,45 @@ var getTopUsers = function(cb){
 					//cb(result);
 				}else{
 					console.log("no users found");
+				}
+			}));
+			client.close();
+			//collection.insertOne( {username: "poop", password: "wtfisthis"});
+			//var query = { username: "poop" };
+			//var newval = { $set: {balance: 500 }};
+			//collection.updateOne(query, newval, function(err, res){
+			//	if(err){
+			//		console.log("error");
+			//	}else{
+			//		console.log("success");
+			//	}
+				// perform actions on the collection object
+				//client.close();
+			}
+		});
+}
+
+var getUserInfo = function(userName, cb){
+	
+	const MongoClient = require('mongodb').MongoClient;
+
+	// replace the uri string with your connection string.
+	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
+	MongoClient.connect(uri, function(err, client) {
+		if(err) {
+			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
+		}else{
+			console.log('Connected...Getting nickname');
+			const db = client.db("Blackjack");
+			const collection = db.collection("Users");
+			collection.findOne({username: userName}, (function(err, result){
+				if(err){
+					console.log("error in find");
+				}else if(result != null){
+					console.log("success find function");
+					cb(result);
+				}else{
+					console.log("user does not exists");
 				}
 			}));
 			client.close();

@@ -7,10 +7,21 @@ $(document).ready(function () {
         login($('#username').val(), $('#password').val());
     });
 
+    $('#create-account').click(function(event){
+        event.preventDefault();
+        createAccount($('#new-username').val(), $('#new-nickname').val(), $('#new-password').val());
+    });
+
     function login(username, password) {
         console.log("sending " + username + " " + password);
         usr = username;
         socket.emit('login', username, password);
+    }
+
+    function createAccount(username, nickname, password){
+        console.log("sending usr= " + username + " nick= " + nickname + " pswrd= " + password);
+        usr = username;
+        socket.emit('create account', username, nickname, password);
     }
 
     socket.on('login success', function () {
