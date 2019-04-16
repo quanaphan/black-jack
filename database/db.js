@@ -120,7 +120,7 @@ var addUser = function(userName, psword, nickName, success, fail){
 			console.log('Connected...Adding user');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
-			collection.find({username: userName}, (function(err, result){
+			collection.findOne({username: userName}, (function(err, result){
 				if(err){
 					console.log("error in find");
 					fail();
@@ -128,7 +128,7 @@ var addUser = function(userName, psword, nickName, success, fail){
 					console.log("username already exists");
 					fail();
 				}else{
-					collection.insertOne({username: userName, password: psword, nickname: nickName, wins: 0, loses: 0}, function(err, result){
+					collection.insertOne({username: userName, password: psword, nickname: nickName, balance: 150, wins: 0, loses: 0}, function(err, result){
 						if(err){
 							console.log("error adding user");
 							fail();
@@ -139,7 +139,7 @@ var addUser = function(userName, psword, nickName, success, fail){
 					});
 				}
 			}));
-			client.close();
+			//client.close();
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
