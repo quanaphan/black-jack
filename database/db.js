@@ -419,7 +419,9 @@ module.exports = {
 	getUserBalance,
 	getUserNickname,
 	addUser,
-	validateUser
+	validateUser,
+	getUserInfo,
+	getTopUsers, 
 }
 
 
