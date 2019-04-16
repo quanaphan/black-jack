@@ -5,6 +5,7 @@
     <title>Blackjack</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- JQuery & Bootstrap4 -->
+    <script src="/socket.io/socket.io.js"></script>
     <script
             src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -24,6 +25,7 @@
     <!-- Scripts -->
     <script src="/javascripts/gameroom/cards.js"></script>
     <script src="/javascripts/gameroom/gameRoomEvents.js"></script>
+    <script src="/javascripts/gameroom/game.js"></script>
 
 </head>
 <body>
@@ -87,10 +89,19 @@
         <button><img src="images/arrow.jpg"></button>
     </form>
 </div>
+<!--<div class="toast" id="bet-place-toast">
+    <div class="toast-header">
+         Place Your Bets
+    </div>
+    <div class="toast-body">
+        Enter the amount you wish to bet before the timer runs out.
+    </div>
+</div>-->
+
 
 <div class="container" id="game-board">
     <div class="dealer-row">
-        <span class="timer">60</span>
+        <span id="timer">60</span>
         <div class="col m8 s12">
             <h4>Dealer</h4>
             <div id="deck-pile" class=".d-md-none .d-lg-block">
@@ -103,7 +114,7 @@
 
     <div class="player-hands">
         <div class="col-sm">
-            <h4>Player1</h4>
+            <h4 id="#player1-head">Player1</h4>
             <div class="user-hand" id="player1"></div>
             <div class="card-placeholder" id="player1-placeholder"></div>
             <span class="hand-total" id="player1-total">0</span><br>
@@ -111,7 +122,7 @@
 
         </div>
         <div class="col-sm">
-            <h4>Player</h4>
+            <h4 id="#main-user-head">Player</h4>
             <div class="user-hand" id="main-user"></div>
             <div class="card-placeholder" id="main-user-placeholder"></div>
             <span class="hand-total" id="main-user-total">0</span><br>
@@ -120,7 +131,7 @@
         </div>
 
         <div class="col-sm">
-            <h4>Player2</h4>
+            <h4 id="#player2-head">Player2</h4>
             <div class="user-hand" id="player2"></div>
             <div class="card-placeholder" id="player2-placeholder"></div>
             <span class="hand-total" id="player2-total">0</span><br>
@@ -146,7 +157,8 @@
 
         <div class="bet">
             <h5>Current Bet</h5>
-            <strong>$</strong><input id="wager-input" class="input-small" type="text"/>
+            <strong>$</strong><input id="wager-input" class="input-small" type="number"/><br>
+            <button id="lock-bet">Lock In Bet</button>
         </div>
         <div class="chip-store">
             <h5>Total Money</h5>
@@ -163,18 +175,7 @@
 
 
     $(document).ready(function () {
-        let waitTime = 5000;
-        initialDeal(3);
-        flipHiddenCard();
-        setTimeout(function () {
-            displayHandTotals();
-            dealCard(player2Hand, $('#player2'))
-           let bo = hasAce(player2Hand)
-            reduceAceValue(player2Hand)
 
-            displayHandTotals()
-
-        }, waitTime);
 
     });
 

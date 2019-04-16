@@ -1,12 +1,13 @@
+/*
 let playerTurn;
 let currentTurn = 1;
-
-
+*/
+/*
 let mainPlayerHand = [];
 let dealerHand = [];
 let player1Hand = [];
 let player2Hand = [];
-
+*/
 let dealerTotal = 0;
 let mainPlayerTotal = 0;
 let player1Total = 0;
@@ -20,22 +21,11 @@ let player2Total = 0;
  * @param location: The location on the board to deal the card, "#dealer" is the dealer on top, #main-user is the user at the center of the screen,#player1 is the user on the left
  *                  #player2 is the user on the right
  */
-function dealCard(hand, location) {
+function dealCardAnimation(hand, location) {
     let dealerPlayerArea = $("#dealer");
-    let cardDrawn = cards.pop();
-    hand.push(cardDrawn);
-    let index = hand.length - 1;
 
+    //let index = 0;
 
-    if (currentTurn === 1) {
-        playerTurn = "dealer";
-    } else if (currentTurn === 2) {
-        playerTurn = "main-user";
-    } else if (currentTurn === 3) {
-        playerTurn = "player1";
-    } else if (currentTurn === 4) {
-        playerTurn = "player2";
-    }
 
     // Create card image for card, hide initially so it doesn't impact transition
     let cardImage = $("<img>").attr("class", "card").attr("src", "images/" + hand[index].src).hide();
@@ -81,89 +71,97 @@ function initialDeal(numPlayers) {
 
 
     if (numPlayers === 1) {
-        setTimeout(function () {
-
-            dealCard(dealerHand, dealerPlayerArea);
-            currentTurn++;
-        }, 500);
+        session['turn'] = 'p1';
         setTimeout(function () {
             $("#main-user-placeholder").remove();
-            dealCard(mainPlayerHand, mainPlayerArea);
-            currentTurn++;
+            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            session['turn'] = 'dealer';
+
+        }, 500);
+        setTimeout(function () {
+            dealCardAnimation(dealerHand, dealerPlayerArea);
+            session['turn'] = 'p1';
         }, 1000);
         setTimeout(function () {
-            dealCard(dealerHand, dealerPlayerArea);
-            currentTurn++;
+            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            session['turn'] = 'dealer';
+
         }, 1500);
         setTimeout(function () {
-            dealCard(mainPlayerHand, mainPlayerArea);
-            currentTurn++;
+            dealCardAnimation(dealerHand, dealerPlayerArea);
+            session['turn'] = 'p1'
         }, 2000);
 
     } else if (numPlayers === 2) {
-        setTimeout(function () {
 
-            dealCard(dealerHand, dealerPlayerArea);
-            currentTurn++;
+        session['turn'] = 'p2';
+        setTimeout(function () {
+            $("#player1-placeholder").remove();
+            dealCardAnimation(player1Hand, player1Area);
+            session['turn'] = 'p1'
         }, 500);
         setTimeout(function () {
             $("#main-user-placeholder").remove();
-            dealCard(mainPlayerHand, mainPlayerArea);
-            currentTurn++;
+            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            session['turn'] = 'dealer'
         }, 1000);
         setTimeout(function () {
-            $("#player1-placeholder").remove();
-            dealCard(player1Hand, player1Area);
-            currentTurn1;
+            dealCardAnimation(dealerHand, dealerPlayerArea);
+            session['turn'] = 'p2'
+
         }, 1500);
         setTimeout(function () {
-            dealCard(dealerHand, dealerPlayerArea);
-            currentTurn++;
+            dealCardAnimation(player1Hand, player1Area);
+            session['turn'] = 'p1'
         }, 2000);
         setTimeout(function () {
-            dealCard(mainPlayerHand, mainPlayerArea);
-            currentTurn++;
+            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            session['turn'] = 'dealer'
         }, 2500);
         setTimeout(function () {
-            dealCard(player1Hand, player1Area);
-            currentTurn = 2;
+            dealCardAnimation(dealerHand, dealerPlayerArea);
+            session['turn'] = 'p2'
         }, 3000);
 
     } else if (numPlayers === 3) {
-        setTimeout(function () {
-            dealCard(dealerHand, dealerPlayerArea);
-            currentTurn++;
-        }, 500);
+
+        session['turn'] = 'p2';
         setTimeout(function () {
             $("#player1-placeholder").remove();
-            dealCard(player1Hand, player1Area);
-            currentTurn++;
-        }, 1500);
+            dealCardAnimation(player1Hand, player1Area);
+            session['turn'] = 'p1'
+        }, 500);
+
         setTimeout(function () {
             $("#main-user-placeholder").remove();
-            dealCard(mainPlayerHand, mainPlayerArea);
-            currentTurn++;
-        }, 2000);
+            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            session['turn'] = 'p3'
+        }, 1500);
+
         setTimeout(function () {
             $("#player2-placeholder").remove();
-            dealCard(player2Hand, player2Area);
-            currentTurn = 1;
+            dealCardAnimation(player2Hand, player2Area);
+            session['turn'] = 'dealer'
+        }, 2000);
+        setTimeout(function () {
+            dealCardAnimation(dealerHand, dealerPlayerArea);
+            session['turn'] = 'p2'
         }, 2500);
         setTimeout(function () {
-            dealCard(dealerHand, dealerPlayerArea);
-            currentTurn++;
+            dealCardAnimation(player1Hand, player1Area);
+            session['turn'] = 'p1'
         }, 3000);
         setTimeout(function () {
-            dealCard(player1Hand, player1Area);
-            currentTurn++;
+            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            session['turn'] = 'p3'
         }, 3500);
         setTimeout(function () {
-            dealCard(mainPlayerHand, mainPlayerArea);
-            currentTurn++;
+            dealCardAnimation(player2Hand, player2Area);
+            session['turn'] = 'dealer'
         }, 4000);
         setTimeout(function () {
-            dealCard(player2Hand, player2Area);
-            currentTurn = 1;
+            dealCardAnimation(dealerHand, dealerPlayerArea);
+            session['turn'] = 'p2'
         }, 4500);
     }
 }

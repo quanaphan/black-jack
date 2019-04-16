@@ -101,7 +101,7 @@ li a:hover {
 }
 
 #wager-input {
-    width: 70px;
+    width: 111px;
     border-radius: 5px;
     border: aliceblue;
     margin-left: 2px;
@@ -123,12 +123,22 @@ button, button:focus {
 button.secondary {
     background: #1E6692;
 }
+#lock-bet{
+    background: #1E6692;
+    margin-top:5px;
+    margin-left:15px;
+    color: white;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 1px;
+    border: 0;
+}
 
 button:active {
     background: black;
 }
 
-button.disabled-button, button.secondary.disabled-button {
+button.disabled-button, #lock-bet.disabled-button, button.secondary.disabled-button {
     background: #0F2725;
 }
 
@@ -141,7 +151,7 @@ button.disabled-button, button.secondary.disabled-button {
     margin-right: 30px;
 }
 
-.timer {
+#timer {
     margin-bottom: 30px;
 }
 
