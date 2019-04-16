@@ -150,6 +150,7 @@ var update_balance = function(key, balance){
   player_sessions[key]['balance'] = balance;
 }
 
+
 /***************************************************************************************************
  * Login socket logics
  */
@@ -216,10 +217,14 @@ lobby.on('connection', function(socket){
         console.log("user connected to lobby is '" + username + "'");
         load_user(username, function(){
           console.log('Finished loading users. spamming emits')
-          socket.emit('init', JSON.stringify(player_sessions[username]));  
-          //send out game lobby list
-          socket.emit('lobby update', JSON.stringify(game_sessions));
-        });
+          socket.emit('init', JSON.stringify(player_sessions[username]));
+        });  
+        // send out game lobby list
+        socket.emit('lobby update', JSON.stringify(game_sessions));
+        database.getTopUsers(function(result){
+          // send out leaderboard
+          socket.emit('leaderboard', JSON.stringify(result));
+        })
       }else{
         // failed to get cookie
         socket.emit('redirect to login');
@@ -271,6 +276,8 @@ lobby.on('connection', function(socket){
       socket.emit('join fail');
     }
   })
+
+
 
   socket.on('disconenct', function(){
     // do something
