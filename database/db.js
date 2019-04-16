@@ -329,8 +329,8 @@ var getTopUsers = function(cb){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					console.log(result);
-					//cb(result);
+					console.log(result[0].nickname);
+					cb(result);
 				}else{
 					console.log("no users found");
 				}

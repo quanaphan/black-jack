@@ -6,7 +6,7 @@ $(document).ready(function() {
 		console.log("inside init");
 		player = JSON.parse(sessionPlayer);
 		console.log(player);
-		$('#username').text(player['username']);
+		$('#username').text(player['nickname']);
 		$('#money').text("Balance: $" + player['balance']);
 	});
 
@@ -19,6 +19,10 @@ $(document).ready(function() {
 		console.log("creating room");
 		socket.emit('create room', roomName);
 	}
+
+	socket.on('create success', function(roomNumber){
+		joinRoom(roomNumber);
+	});
 
 	var gameSessions = {};
 	socket.on('lobby update', function (game_sessions) {
@@ -80,11 +84,44 @@ $(document).ready(function() {
 		window.location.href = "/account";
 	}
 
+	$('#game-join-enter').click(function(){
+		event.preventDefault();
+		joinRoom($('#room-number-existing').val());
+	});
+
+	function joinRoom(roomNumber){
+		console.log("the room numner is " + roomNumber);
+		socket.emit('join room', roomNumber);
+	}
+
+	socket.on('join success', function(){
+		console.log("Succesfully joined the room");
+		window.location.href = "/game";
+	});
+
+	socket.on('join fail', function(){
+		console.log("Failed to join the room: room is full");
+		alert("Failed to join the room: room is full");
+	});
+
+	var leaderboard = {};
+	socket.on('leaderboard', function(list){
+		leaderboard = JSON.parse(list);
+		var i;
+		var length = leaderboard.length;	//if we want more than 3 to show
+		var cap = 5;
+		if(length < cap){
+			cap = length;
+		}
+		for(i = 0; i < cap; i++){
+			$('#leaders').append($('<li>').text((i+1) + ". " + leaderboard[i].nickname + " - $" + leaderboard[i].balance));
+		}
+	});
+
 	$('#game-create-enter').click(function () {
 		let roomName = $('#newRoomModal #room-name').val();
 		$('#newRoomModal #room-name').val("");
 	});
-
 
 
 
