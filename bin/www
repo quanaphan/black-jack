@@ -460,19 +460,36 @@ game.on('connection', function(socket){
         dealCard(session);
         // calc score again
         score = calculateHandWithAces(dealer['hand']);
+        session['dealer']['score'] = score;
       }
       // done dealer's draws, emitting update
       game.to(channelname).emit('dealer drawn', JSON.stringify(session));
       // tally up players' hand
-      for(var player in session['players']){
+      const players = Object.keys(session['players']);
+      for(var player of players){
         var score = calculateHandWithAces(session['players'][player][hand]);
         session['player'][player]['score'] = score;
       }
       // check against dealer score
-      
-      // declare victory/defeat (spam emit on channel)
-      // also have to consider
-      // Save balance to DB according to win/lose w/ placed bet
+      for(var player of players){
+        // check for chicken dinner here - TODO
+
+        // check if host has chicken dinner(?)
+        // declare victory/defeat (spam emit on channel)
+        if(session['player'][player]['score'] < session['dealer']['score']){
+          // lost
+          game.to(channelname).emit('lose', player);
+        }else if (session['player'][player]['score'] === session['dealer']['score']){
+          // draw
+          game.to(channelname).emit('draw', player);
+        }else{
+          // win
+          game.to(channelname).emit('win', player);
+        }
+        // TODO
+        // also have to consider
+        // Save balance to DB according to win/lose w/ placed bet
+      }
     }
   });
 })
