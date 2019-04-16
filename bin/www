@@ -365,7 +365,7 @@ game.on('connection', function(socket){
         channelname = "#" + sessionID;
         socket.join(channelname);
         load_user(username, function(){
-          socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session);
+          socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session));
 
         })
       }else{
