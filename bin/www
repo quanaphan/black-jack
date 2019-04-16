@@ -293,11 +293,12 @@ account.on('connection', function(socket){
         username = socket_cookie['username'];
         load_user(username, function(){
           socket.emit('init', JSON.stringify(player_sessions[username]));
+          database.getTopUsers(function(result){
+            // send out leaderboard
+            socket.emit('rankings', JSON.stringify(result));
+          })
         });
-        database.getTopUsers(function(result){
-          // send out leaderboard
-          socket.emit('rankings', JSON.stringify(result));
-        })
+        
       }else{
         // failed to get cookie
         socket.emit('redirect to login');

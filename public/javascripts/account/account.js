@@ -27,9 +27,12 @@ $(document).ready(function(){
 	var leaderboard = {};
 	socket.on('rankings', function(list){
 		leaderboard = JSON.parse(list);
+		console.log(leaderboard);
 		var i;
 		var length = leaderboard.length;	//if we want more than 3 to show
 		for(i = 0; i < length; i++){
+			console.log('leaderboard name: ' + leaderboard[i].username);
+			console.log('local username: ' + player['username'])
 			if(leaderboard[i].username === player['username']){
 				$('#rank').text("Rank: " + (i+1));
 			}
