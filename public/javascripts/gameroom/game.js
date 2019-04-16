@@ -33,3 +33,5 @@
 // 'win' event, username. username won, change their graphic accordingly. Will receive other players'
 
 // 'lose' event, username. username lost, change their graphic accordingly. Will receive other players'
+
+// 'draw' maibe?
