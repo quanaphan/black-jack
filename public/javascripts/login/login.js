@@ -35,7 +35,6 @@ $(document).ready(function () {
         window.location.href = "/lobby";
 
     });
-    
     socket.on('login failure', function () {
         console.log("failed");
     });

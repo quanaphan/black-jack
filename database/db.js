@@ -109,10 +109,11 @@ var validateUser = function(userName, password, cb){
 
 var addUser = function(userName, psword, nickName, success, fail){
 	const MongoClient = require('mongodb').MongoClient;
-
+	
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -120,27 +121,28 @@ var addUser = function(userName, psword, nickName, success, fail){
 			console.log('Connected...Adding user');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
-			collection.findOne({username: userName}, (function(err, result){
+			collection.find({username: userName}, (function(err, result){
 				if(err){
 					console.log("error in find");
-					fail();
 				}else if(result != null){
-					console.log(result.username);
 					console.log("username already exists");
-					fail();
 				}else{
-					collection.insertOne({username: userName, password: psword, nickname: nickName, balance: 150, wins: 0, loses: 0}, function(err, result){
+					collection.insertOne({username: userName, password: psword, nickname: nickName, wins: 0, loses: 0}, function(err, result){
 						if(err){
-							console.log("error adding user " + err.stack);
-							fail();
+							console.log("error adding user");
 						}else{
 							console.log("success");
-							success();
+							succ = true;
 						}
 					});
 				}
 			}));
-			//client.close();
+			client.close();
+			if(succ){
+				success();
+			}else{
+				fail();
+			}
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -417,9 +419,7 @@ module.exports = {
 	getUserBalance,
 	getUserNickname,
 	addUser,
-	validateUser,
-	getUserInfo,
-	getTopUsers
+	validateUser
 }
 
 
