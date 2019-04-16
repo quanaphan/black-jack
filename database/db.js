@@ -66,10 +66,11 @@ var connectToDatabase = function(){
 var validateUser = function(userName, password, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
-
+	
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -82,16 +83,15 @@ var validateUser = function(userName, password, cb){
 				}else if(result != null){
 					console.log("success find function");
 					if(result.username === userName && result.password === password){
-						cb(true);
+						succ = true;
 					}else{
-						cb(false);
 					}
 				}else{
 					console.log("user does not exists");
-					cb(false);
 				}
 			}));
 			client.close();
+			cb(succ);
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -109,10 +109,11 @@ var validateUser = function(userName, password, cb){
 
 var addUser = function(userName, psword, nickName, success, fail){
 	const MongoClient = require('mongodb').MongoClient;
-
+	
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -123,23 +124,25 @@ var addUser = function(userName, psword, nickName, success, fail){
 			collection.find({username: userName}, (function(err, result){
 				if(err){
 					console.log("error in find");
-					fail();
 				}else if(result != null){
 					console.log("username already exists");
-					fail();
 				}else{
 					collection.insertOne({username: userName, password: psword, nickname: nickName, wins: 0, loses: 0}, function(err, result){
 						if(err){
 							console.log("error adding user");
-							fail();
 						}else{
 							console.log("success");
-							success();
+							succ = true;
 						}
 					});
 				}
 			}));
 			client.close();
+			if(succ){
+				success();
+			}else{
+				fail();
+			}
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -159,10 +162,12 @@ var addUser = function(userName, psword, nickName, success, fail){
 var getUserNickname = function(userName, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
-
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+
+		var  succ = false;
+		var res;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -174,12 +179,15 @@ var getUserNickname = function(userName, cb){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					cb(result.nickname);
+					res = result.nickname;
+					succ = true;
+					
 				}else{
 					console.log("user does not exists");
 				}
 			}));
 			client.close();
+			if(succ) cb(res);
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -202,6 +210,8 @@ var getUserBalance = function(userName, cb){
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
+		var res;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -213,12 +223,13 @@ var getUserBalance = function(userName, cb){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					cb(result.balance);
+					res = result.balance
 				}else{
 					console.log("user does not exists");
 				}
 			}));
 			client.close();
+			if(succ) cb(result.balance);
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -234,13 +245,14 @@ var getUserBalance = function(userName, cb){
 		});
 }
 
-var setUserNickname = function(userName, nickName){
+var setUserNickname = function(userName, nickName, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
 
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -254,9 +266,11 @@ var setUserNickname = function(userName, nickName){
 					console.log("error in setNickname");
 				}else{
 					console.log("successful change");
+					succ = true;
 				}
 			}));
 			client.close();
+			if(succ) cb();
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -272,13 +286,14 @@ var setUserNickname = function(userName, nickName){
 		});
 }
 
-var setUserBalance = function(userName, newBalance){
+var setUserBalance = function(userName, newBalance, cb){
 	
 	const MongoClient = require('mongodb').MongoClient;
 
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -292,9 +307,11 @@ var setUserBalance = function(userName, newBalance){
 					console.log("error in setBalance");
 				}else{
 					console.log("successful change");
+					succ = true;
 				}
 			}));
 			client.close();
+			if (succ) cb();
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -317,6 +334,8 @@ var getTopUsers = function(cb){
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
+		var res;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -330,12 +349,13 @@ var getTopUsers = function(cb){
 				}else if(result != null){
 					console.log("success find function");
 					console.log(result);
-					//cb(result);
+					res = result;
 				}else{
 					console.log("no users found");
 				}
 			}));
 			client.close();
+			if(succ) cb(res);
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
@@ -358,6 +378,8 @@ var getUserInfo = function(userName, cb){
 	// replace the uri string with your connection string.
 	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
 	MongoClient.connect(uri, function(err, client) {
+		var succ = false;
+		var res;
 		if(err) {
 			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
 		}else{
@@ -369,12 +391,13 @@ var getUserInfo = function(userName, cb){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					cb(result);
+					res = result;
 				}else{
 					console.log("user does not exists");
 				}
 			}));
 			client.close();
+			if(succ) cb(result);
 			//collection.insertOne( {username: "poop", password: "wtfisthis"});
 			//var query = { username: "poop" };
 			//var newval = { $set: {balance: 500 }};
