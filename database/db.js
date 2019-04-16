@@ -128,7 +128,7 @@ var addUser = function(userName, psword, nickName, success, fail){
 					console.log("username already exists");
 					fail();
 				}else{
-					collection.insertOne({username: userName, password: psword, nickname: nickName, balance: 150, wins: 0, loses: 0}, function(err, result){
+					collection.insertOne({username: userName, password: psword, nickname: nickName, balance: 150, wins: 0, loses: 0, rank: 0}, function(err, result){
 						if(err){
 							console.log("error adding user");
 							fail();
