@@ -140,13 +140,13 @@ var load_user = function(key, cb){
   });
 }
 
-var update_nick = function(key, nickname){
-  database.setUserNickname(key, nickname, function(){});
+var update_nick = function(key, nickname, cb){
+  database.setUserNickname(key, nickname, cb());
   player_sessions[key]['nickname'] =  nickname;
 }
 
-var update_balance = function(key, balance){
-  database.setUserBalance(key, balance, function(){});
+var update_balance = function(key, balance, cb){
+  database.setUserBalance(key, balance, cb());
   player_sessions[key]['balance'] = balance;
 }
 
@@ -269,8 +269,8 @@ lobby.on('connection', function(socket){
       var p = 'p' + game_sessions[id]['capacity'];
       game_sessions[id][p] = username;
       //send ack, refresh lobby list
-      socket.emit('join success', id)
       lobby.emit('lobby update', JSON.stringify(game_sessions));
+      socket.emit('join success')
     }else{
       //room is full
       socket.emit('join fail');
@@ -350,7 +350,10 @@ function dealCard(session){
 }
 
 function removeFromGame(session, username){
-
+  delete session['players'][username];
+  var p = 'p' + capacity;
+  delete session[p];
+  session['capacity'] -= 1;
 }
 
 
@@ -390,9 +393,9 @@ game.on('connection', function(socket){
   }
   socket.on('disconnect', function(){
     // remove user from game session
-    removeFromGame(session, username, function(){
-
-    })
+    removeFromGame(session, username);
+    // do more clean ups
+    game.to(channelname).emit('player left', username, JSON.stringify(session));
   })
   // TODO - get nickname here
   
@@ -506,6 +509,7 @@ game.on('connection', function(socket){
         // TODO
         // also have to consider
         // Save balance to DB according to win/lose w/ placed bet
+        // new deck + shuffle
       }
     }
   });
