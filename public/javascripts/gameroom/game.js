@@ -195,7 +195,7 @@ $(document).ready(function () {
             }, 2000);
             hideAlert();
         }
-    }
+    });
     // 'lose' event, username. username lost, change their graphic accordingly. Will receive other players'
     socket.on('lose', function (username) {
         // username lost, do animation for <username>
@@ -229,7 +229,7 @@ $(document).ready(function () {
         });
 
 
-    };
+    }
 
     function startLockInTimer() {
 
@@ -260,7 +260,8 @@ $(document).ready(function () {
     }
 
     function disableAllButtons() {
-        disableButton("#hit-button");
+        
+        disableButton('#hit-button');
         disableButton("#stand-button");
         disableButton("#double-down-button");
 
