@@ -57,7 +57,7 @@ $(document).ready(function () {
         if (session['capacity'] > 2) {
             $('#player2-head').text(session['players'][player3]['nickname']);
         }
-
+        disableAllButtons();
 
     });
 
@@ -93,6 +93,7 @@ $(document).ready(function () {
         player2Hand = session['players'][player2]['hand'];
 
         initialDeal(session);
+        enableAllButtons();
 
         //session updated with initial hand
         // initial animations go here
@@ -113,8 +114,27 @@ $(document).ready(function () {
         session = JSON.parse(session_info);
         //session updated with the new card
         // this is the new card dealt to <username>
-        var new_card = session['players'][username]['hand'];
+        var hand = session['players'][username]['hand'];
+        var new_card = hand[hand.length-1];
+        var turn = session['turn'];
+        var location;
+
+        if(turn === 'p1'){
+            location = $("#main-user");
+        }else if (turn ==='p2'){
+            location = $("#player1");
+        }
+        else if (turn ==='p3'){
+            location = $("#player2");
+        }else if (turn ==='dealer'){
+            location = $("#dealer");
+        }
         // do some animation
+        dealCardAnimationSingle(hand, location, new_card, session);
+        
+        $("#stand-button").click(function(){
+            socket.emit('pass');
+        });
     });
     // emit 'pass' to pass their turn (on button press or something), same lock out condition as card deal
     //socket.emit('pass');
@@ -174,6 +194,19 @@ $(document).ready(function () {
 
             }
         }, 1000);
+
+    }
+
+    function disableAllButtons(){
+        disableButton("#hit-button");
+        disableButton("#stand-button");
+        disableButton("#double-down-button");
+
+    }
+    function enableAllButtons(){
+        enableButton("#hit-button");
+        enableButton("#stand-button");
+        enableButton("#double-down-button");
 
     }
 
