@@ -5,9 +5,9 @@ $(document).ready(function () {
     var player; // you
     var session; // the game session
 
-    let mainPlayerHand =[];
+    let mainPlayerHand = [];
     let dealerHand = [];
-    let player1Hand =[];
+    let player1Hand = [];
     let player2Hand = [];
 
     // update session details whenever received.
@@ -59,7 +59,6 @@ $(document).ready(function () {
         }
 
 
-
     });
 
     // emit 'ready' when lock-in bet
@@ -93,7 +92,7 @@ $(document).ready(function () {
         player1Hand = session['players'][player1]['hand'];
         player2Hand = session['players'][player2]['hand'];
 
-        initialDeal(session['capacity']);
+        initialDeal(session);
 
         //session updated with initial hand
         // initial animations go here
@@ -109,6 +108,7 @@ $(document).ready(function () {
 
     // 'card dealt' event, username, session details. A card has been dealt to username and new session details, use that to execute animation
     socket.on('card dealt', function (username, session_info) {
+
         //username = the one that got a card dealt to them
         session = JSON.parse(session_info);
         //session updated with the new card
@@ -163,13 +163,13 @@ $(document).ready(function () {
 
     };
 
-    function startLockInTimer(){
+    function startLockInTimer() {
         //$('#bet-place-toast').toast('show');
         let time = 15;
-        let clock = setInterval(function(){
+        let clock = setInterval(function () {
             $("#timer").text(time);
-            time -=1;
-            if(time <= 0){
+            time -= 1;
+            if (time <= 0) {
                 clearInterval(clock);
 
             }

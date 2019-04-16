@@ -21,7 +21,7 @@ let player2Total = 0;
  * @param location: The location on the board to deal the card, "#dealer" is the dealer on top, #main-user is the user at the center of the screen,#player1 is the user on the left
  *                  #player2 is the user on the right
  */
-function dealCardAnimation(hand, location) {
+function dealCardAnimation(hand, location, index, session) {
     let dealerPlayerArea = $("#dealer");
 
     //let index = 0;
@@ -29,7 +29,7 @@ function dealCardAnimation(hand, location) {
 
     // Create card image for card, hide initially so it doesn't impact transition
     let cardImage = $("<img>").attr("class", "card").attr("src", "images/" + hand[index].src).hide();
-    cardImage.attr("id", playerTurn + "-card-" + index);
+    cardImage.attr("id", session['turn'] + "-card-" + index);
 
 
     // To create stacked card effect
@@ -60,9 +60,9 @@ function dealCardAnimation(hand, location) {
 /**
  * Name: initialDeal
  * Deals all the cards at the beginning of each turn including delays. May need to be modified based on how the current turn is implemented in final version
- * @param numPlayers: The number of players in the game not including dealer
+ * @param sesion
  */
-function initialDeal(numPlayers) {
+function initialDeal(session) {
 
     let mainPlayerArea = $("#main-user");
     let dealerPlayerArea = $("#dealer");
@@ -70,97 +70,97 @@ function initialDeal(numPlayers) {
     let player2Area = $("#player2");
 
 
-    if (numPlayers === 1) {
+    if (session['capacity'] === 1) {
         session['turn'] = 'p1';
         setTimeout(function () {
             $("#main-user-placeholder").remove();
-            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            dealCardAnimation(mainPlayerHand, mainPlayerArea, 0);
             session['turn'] = 'dealer';
 
         }, 500);
         setTimeout(function () {
-            dealCardAnimation(dealerHand, dealerPlayerArea);
+            dealCardAnimation(dealerHand, dealerPlayerArea, 0);
             session['turn'] = 'p1';
         }, 1000);
         setTimeout(function () {
-            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            dealCardAnimation(mainPlayerHand, mainPlayerArea, 1);
             session['turn'] = 'dealer';
 
         }, 1500);
         setTimeout(function () {
-            dealCardAnimation(dealerHand, dealerPlayerArea);
+            dealCardAnimation(dealerHand, dealerPlayerArea, 1);
             session['turn'] = 'p1'
         }, 2000);
 
-    } else if (numPlayers === 2) {
+    } else if (session['capacity'] === 2) {
 
         session['turn'] = 'p2';
         setTimeout(function () {
             $("#player1-placeholder").remove();
-            dealCardAnimation(player1Hand, player1Area);
+            dealCardAnimation(player1Hand, player1Area, 0);
             session['turn'] = 'p1'
         }, 500);
         setTimeout(function () {
             $("#main-user-placeholder").remove();
-            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            dealCardAnimation(mainPlayerHand, mainPlayerArea, 0);
             session['turn'] = 'dealer'
         }, 1000);
         setTimeout(function () {
-            dealCardAnimation(dealerHand, dealerPlayerArea);
+            dealCardAnimation(dealerHand, dealerPlayerArea, 0);
             session['turn'] = 'p2'
 
         }, 1500);
         setTimeout(function () {
-            dealCardAnimation(player1Hand, player1Area);
+            dealCardAnimation(player1Hand, player1Area, 1);
             session['turn'] = 'p1'
         }, 2000);
         setTimeout(function () {
-            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            dealCardAnimation(mainPlayerHand, mainPlayerArea, 1);
             session['turn'] = 'dealer'
         }, 2500);
         setTimeout(function () {
-            dealCardAnimation(dealerHand, dealerPlayerArea);
+            dealCardAnimation(dealerHand, dealerPlayerArea, 1);
             session['turn'] = 'p2'
         }, 3000);
 
-    } else if (numPlayers === 3) {
+    } else if (session['capacity'] === 3) {
 
         session['turn'] = 'p2';
         setTimeout(function () {
             $("#player1-placeholder").remove();
-            dealCardAnimation(player1Hand, player1Area);
+            dealCardAnimation(player1Hand, player1Area, 0);
             session['turn'] = 'p1'
         }, 500);
 
         setTimeout(function () {
             $("#main-user-placeholder").remove();
-            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            dealCardAnimation(mainPlayerHand, mainPlayerArea, 0);
             session['turn'] = 'p3'
         }, 1500);
 
         setTimeout(function () {
             $("#player2-placeholder").remove();
-            dealCardAnimation(player2Hand, player2Area);
+            dealCardAnimation(player2Hand, player2Area, 0);
             session['turn'] = 'dealer'
         }, 2000);
         setTimeout(function () {
-            dealCardAnimation(dealerHand, dealerPlayerArea);
+            dealCardAnimation(dealerHand, dealerPlayerArea, 0);
             session['turn'] = 'p2'
         }, 2500);
         setTimeout(function () {
-            dealCardAnimation(player1Hand, player1Area);
+            dealCardAnimation(player1Hand, player1Area, 0);
             session['turn'] = 'p1'
         }, 3000);
         setTimeout(function () {
-            dealCardAnimation(mainPlayerHand, mainPlayerArea);
+            dealCardAnimation(mainPlayerHand, mainPlayerArea, 0);
             session['turn'] = 'p3'
         }, 3500);
         setTimeout(function () {
-            dealCardAnimation(player2Hand, player2Area);
+            dealCardAnimation(player2Hand, player2Area, 0);
             session['turn'] = 'dealer'
         }, 4000);
         setTimeout(function () {
-            dealCardAnimation(dealerHand, dealerPlayerArea);
+            dealCardAnimation(dealerHand, dealerPlayerArea, 0);
             session['turn'] = 'p2'
         }, 4500);
     }
@@ -205,36 +205,7 @@ function displayHandTotals() {
     $("#player1-total").text(player1Total);
     $("#main-user-total").text(mainPlayerTotal);
     $("#player2-total").text(player2Total);
-    /*
-            dealerPlayerArea.popover({
-                title: "Dealer Total",
-                content: dealerTotal,
-                trigger: "hover",
-                placement: "bottom",
-                animation: true
-            }).popover('show');;
-            mainPlayerArea.popover({
-                title: "Player Total",
-                content: mainPlayerTotal,
-                trigger: "hover",
-                placement: "bottom",
-                animation: true
-            }).popover('show');;
-            player1Area.popover({
-                title: "Player1 Total",
-                content: player1Total,
-                trigger: "hover",
-                placement: "bottom",
-                animation: true
-            }).popover('show');;
-            player2Area.popover({
-                title: "Player2 Total",
-                content: player2Total,
-                trigger: "hover",
-                placement: "bottom",
-                animation: true
-            }).popover('show');
-            */
+
 }
 
 /**
@@ -292,7 +263,7 @@ function reduceAceValue(hand) {
             if (hand[i].name === "ace" && hand[i].value === 11) {
                 hand[i].value = 1;
 
-               break;
+                break;
             }
         }
 

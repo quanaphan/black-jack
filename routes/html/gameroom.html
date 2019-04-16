@@ -173,43 +173,40 @@
 <script>
 
 
-
     $(document).ready(function () {
 
 
-    });
+        $(".rules-nav").click(function () {
 
-    $(".rules-nav").click(function () {
+            $("#rules").animate({
+                height: 'toggle',
 
-        $("#rules").animate({
-            height: 'toggle',
+            }, 200);
+        });
 
-        }, 200);
-    });
+        $("#rules-close").click(function () {
+            $("#rules").hide();
+        });
 
-    $("#rules-close").click(function () {
-        $("#rules").hide();
-    });
+        $("#hit-button").click(function () {
+            //do something
+        });
+        $("#stand-button").click(function () {
+            //do something
+        });
+        $("#double-down-button").click(function () {
+            //do something
+        });
+        $(".exit-game").click(function () {
+            //do something
+        });
 
-    $("#hit-button").click(function () {
-        //do something
-    });
-    $("#stand-button").click(function () {
-        //do something
-    });
-    $("#double-down-button").click(function () {
-        //do something
-    });
-    $(".exit-game").click(function () {
-        //do something
-    });
+        $(".chat-open").click(function () {
+            $("#chat-box").toggle("slow");
+            $(".chat-window").css("height", "calc(100% - 60px)");
 
-    $(".chat-open").click(function () {
-        $("#chat-box").toggle("slow");
-        $(".chat-window").css("height", "calc(100% - 60px)");
-
+        });
     });
-
 
 </script>
 
