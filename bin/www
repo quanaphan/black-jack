@@ -100,16 +100,10 @@ var avail_session = function(){
 var create_session = function(id, title, username){
   game_sessions[id]['host'] = username;
   game_sessions[id]['title'] = title;
-  game_sessions[id]['players'][username] = {};
-  game_sessions[id]['players'][username]['username'] = username;
-  game_sessions[id]['players'][username]['nickname'] = player_sessions[username]['nickname'];
-  game_sessions[id]['players'][username]['hand'] = [];
-  game_sessions[id]['p1'] = username;
   game_sessions[id]['dealer'] = {};
   game_sessions[id]['dealer']['hand'] = [];
   game_sessions[id]['turn'] = 'p1';
   game_sessions[id]['active'] = true;
-  game_sessions[id]['capacity'] = 1;
   game_sessions[id]['deck'] = [...cards];
 }
 
