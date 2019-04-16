@@ -368,8 +368,6 @@ function removeFromGame(session, username){
 game.on('connection', function(socket){
   var username = '';
   var sessionID = -1;
-  // Shuffle, x3 in total since 3 players expected
-  shuffle_deck(sessionID);
   var session = {};
   var channelname = '';
   // join game channel for broadcast
@@ -387,6 +385,8 @@ game.on('connection', function(socket){
         load_user(username, function(){
           socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session))
         })
+        // Shuffle, x3 in total since 3 players expected
+        shuffle_deck(sessionID);
       }else{
         //redirect back to login
       }
