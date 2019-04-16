@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <!-- socket.io -->
     <script src="/socket.io/socket.io.js"></script>
-  <!-- JQuery & Bootstrap4 -->
+    <!-- JQuery & Bootstrap4 -->
     <script
             src="https://code.jquery.com/jquery-3.3.1.js"
             integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -17,163 +17,209 @@
             integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
             crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="/stylesheets/lobby/lobby.css" type="text/css">
-  <!-- Scripts -->
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/stylesheets/lobby/lobby.css" type="text/css">
+    <!-- Scripts -->
     <script src="/javascripts/lobby/lobby.js"></script>
-  </head>
+</head>
 
-  <body>
-    <div style="height: 100%; display: flex;">
-         <div class="container-fluid mw-100 mh-100">
-             <h1 class="display-4" id="Name-Display"></h1>
-             <div class="row">
-                 <div class="col-8">
-                     <h3>Game Rooms</h3>
-                 </div>
-                 <div class="col-4">
-                     <h1 id="username">Username</h1>
-                 </div>
-             </div>
+<body>
+<div style="height: 100%; display: flex;">
+    <div class="container-fluid mw-100 mh-100">
+        <h1 class="display-4" id="Name-Display"></h1>
+        <div class="row">
+            <div class="col-8">
+                <h3>Game Rooms</h3>
+            </div>
+            <div class="col-4">
+                <h1 id="username">Username</h1>
+            </div>
+        </div>
 
-             <div class="row" id="content-row">
-                 <div class="col-8" id="gamerooms_container" style="height: 100%">
-                 <div class="gamesroom_bg"></div>
-                     <ul id="gamerooms" class="list-group overflow-auto mh-100 d-flex flex-column">
-                       <li>gameroom 1</li>
-                       <li>gameroom 2</li>
-                     </ul>
-
-                 </div>
-                 <div class="col-4" style="height:100%">
-                     <div>
-                       <h1 id="money">
-                       $4000
-                       </h1>
-                     </div>
-
-                     <div class="spacer"></div>
-
-                     <div class="col-11" id="leaderboard_container">
-                         <h3>
-                         Leaderboard
-                         </h3>
-                       <ul id="leaders" class="list-group overflow-auto mh-100 d-flex flex-column">
-                         <li>Top1</li>
-                         <li>Top2</li>
-                         <li>Top3</li>
-                     </ul>
-                     </div>
-
-                     <div class="spacer"></div>
-
-                     <div class="col-1" id="help_container">
-
-                     <button id="account" type="button" class="btn btn-info" id="accountpage">
-                     Account
-                     </button>
-
-                     <button type="button" class="btn btn-info" id="help" data-toggle="modal" data-target="#rulesModal">
-                     Help
-                     </button>
-                     </div>
-                     <div class="spacer"></div>
-                     <div class="col-1" id="logout_container">
-                     <button id="logout" type="button" class="btn btn-danger" id="logout">
-                     Logout
-                     </button>
-                     </div>
-
-                 </div>
-             </div>
-
-             <div class="row fixed-bottom">
-               <div class="col-2">
-                 <button id="createRoom" type="button" class="btn btn-success" data-toggle="modal" data-target="#newRoomModal">
-                 Host New Game
-                 </button>
-               </div>
-               <div class="col-1">
-                 <button id="refresh" type="button" class="btn btn-info">
-                 Refresh
-                 </button>
-               </div>
-             </div>
-             <div class="modal fade" id="newRoomModal">
-                 <div class="modal-dialog">
-                     <div class="modal-content">
-
-                         <div class="modal-header">
-                             <h4 class="modal-title">Enter The Game Room Name</h4>
-                             <button type="button" class="close" data-dismiss="modal">×</button>
-                         </div>
-
-                         <!-- Modal body -->
-                         <div class="modal-body">
-                             <input type="text" id="room-name">
-                             <button type="button" id="game-create-enter" data-dismiss="modal">Enter</button>
-                         </div>
-
-                         <!-- Modal footer -->
-                         <div class="modal-footer">
-                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                         </div>
-
-                     </div>
-                 </div>
-             </div>
+        <div class="row" id="content-row">
+            <div class="col-8" id="gamerooms_container" style="height: 100%">
+                <div class="gamesroom_bg"></div>
+                <ul id="gamerooms" class="list-group overflow-auto mh-100 d-flex flex-column">
 
 
-             <!-- Modal -->
-             <div class="modal fade" id="rulesModal" tabindex="-1" role="dialog"  aria-hidden="true">
-                 <div class="modal-dialog" role="document">
-                     <div class="modal-content">
-                         <div class="modal-header">
-                             <h5 class="modal-title" id="exampleModalLongTitle">Blackjack Rules</h5>
-                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                 <span aria-hidden="true">&times;</span>
-                             </button>
-                         </div>
-                         <div class="modal-body">
-                             <p><strong>Goal</strong><br> Beat the dealer by getting a hand as close to 21 as possible, without going
-                                 over 21. A blackjack occurs when you get one ace and one 10 point card, without having split the
-                                 deck
-                                 first.</p>
-                             <p><strong>Gameplay</strong><br> The dealer will give 2 cards to themself and 2 cards to you. The
-                                 dealer's
-                                 second card will be played face down. You can choose to either hit (receive more cards) or stand
-                                 (move
-                                 on to the next hand). You can hit as many times as you choose so long as your deck is under 21.</p>
-                             <p><strong>Card Values</strong><br> Queens, Kings, and Jacks are worth 10, pip cards are worth their
-                                 face
-                                 value, but Aces can be worth either 11 or 1. In this game, Aces have a default value is 11 unless
-                                 you go
-                                 over 21 on your hand.</p>
+                </ul>
+
+            </div>
+            <div class="col-4" style="height:100%">
+                <div>
+                    <h1 id="money">
+                        $4000
+                    </h1>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="col-11" id="leaderboard_container">
+                    <h3>
+                        Leaderboard
+                    </h3>
+                    <ul id="leaders" class="list-group overflow-auto mh-100 d-flex flex-column">
+                        <li>Top1</li>
+                        <li>Top2</li>
+                        <li>Top3</li>
+                    </ul>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="col-1" id="help_container">
+
+                    <button id="account" type="button" class="btn btn-info" id="accountpage">
+                        Account
+                    </button>
+
+                    <button type="button" class="btn btn-info" id="help" data-toggle="modal" data-target="#rulesModal">
+                        Help
+                    </button>
+                </div>
+                <div class="spacer"></div>
+                <div class="col-1" id="logout_container">
+                    <button id="logout" type="button" class="btn btn-danger" id="logout">
+                        Logout
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row fixed-bottom">
+            <div class="col-2">
+                <button id="createRoom" type="button" class="btn btn-success" data-toggle="modal"
+                        data-target="#newRoomModal">
+                    Host New Game
+                </button>
+            </div>
+            <div class="col-1">
+                <button id="refresh" type="button" class="btn btn-info">
+                    Refresh
+                </button>
+            </div>
+            <div class="col-1">
+                <button id="join-room" type="button" class="btn btn-info" data-toggle="modal"
+                        data-target="#join-room-modal">
+                    Join Room
+                </button>
+            </div>
+        </div>
+        <div class="modal fade" id="newRoomModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title">Enter The Game Room Name</h4>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <input type="text" id="room-name">
+                        <button type="button" id="game-create-enter" data-dismiss="modal">Enter</button>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="join-room-modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h4 class="modal-title">Enter The Room Name To Join</h4>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <input type="text" id="room-name-exsisting">
+                        <button type="button" id="game-join-enter" data-dismiss="modal">Enter</button>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
 
-                             <p><strong>Splitting Pairs</strong><br> If you receive 2 cards of the same face value, you may choose to
-                                 split your pairs and play each hand separately. At this table, you can only split once. After you
-                                 split,
-                                 one new card will be dealt to each hand then you can choose to either hit or stand for each hand
-                                 accordingly.</p>
-                             <p><strong>Betting</strong><br> Bets must be placed prior to playing. After receiving your first 2
-                                 cards,
-                                 you can choose to double down (double your original bet). After your next move, you can no longer
-                                 choose
-                                 to double down.</p>
-                             <p><strong>Payout</strong><br> Payout is 1:1 unless you get a blackjack. For a blackjack, payout is 3:2.
-                             </p>
-                     </div>
-                         <div class="modal-footer">
-                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <!-- Modal -->
+        <div class="modal fade" id="rulesModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Blackjack Rules</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Goal</strong><br> Beat the dealer by getting a hand as close to 21 as possible,
+                            without going
+                            over 21. A blackjack occurs when you get one ace and one 10 point card, without having split
+                            the
+                            deck
+                            first.</p>
+                        <p><strong>Gameplay</strong><br> The dealer will give 2 cards to themself and 2 cards to you.
+                            The
+                            dealer's
+                            second card will be played face down. You can choose to either hit (receive more cards) or
+                            stand
+                            (move
+                            on to the next hand). You can hit as many times as you choose so long as your deck is under
+                            21.</p>
+                        <p><strong>Card Values</strong><br> Queens, Kings, and Jacks are worth 10, pip cards are worth
+                            their
+                            face
+                            value, but Aces can be worth either 11 or 1. In this game, Aces have a default value is 11
+                            unless
+                            you go
+                            over 21 on your hand.</p>
 
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
 
-  </body>
+                        <p><strong>Splitting Pairs</strong><br> If you receive 2 cards of the same face value, you may
+                            choose to
+                            split your pairs and play each hand separately. At this table, you can only split once.
+                            After you
+                            split,
+                            one new card will be dealt to each hand then you can choose to either hit or stand for each
+                            hand
+                            accordingly.</p>
+                        <p><strong>Betting</strong><br> Bets must be placed prior to playing. After receiving your first
+                            2
+                            cards,
+                            you can choose to double down (double your original bet). After your next move, you can no
+                            longer
+                            choose
+                            to double down.</p>
+                        <p><strong>Payout</strong><br> Payout is 1:1 unless you get a blackjack. For a blackjack, payout
+                            is 3:2.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+
 
 </html>

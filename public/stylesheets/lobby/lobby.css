@@ -27,6 +27,22 @@ li {
   background:silver;
   opacity: 0.5;
 }
+#gamerooms li{
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  display: block;
+  padding: 10px 10px;
+  text-decoration: none;
+
+}
+
+#gamerooms li:hover{
+  text-decoration: none;
+  color: #1E6692;
+  cursor: pointer;
+
+}
 
 #leaderboard_container{
   padding: 15px;
@@ -38,7 +54,7 @@ li {
 }
 
 
-#room-name{
+#room-name, #room-name-exsisting{
   width:100%;
   padding:8px;
   border:1px solid #ddd;
@@ -46,7 +62,7 @@ li {
   outline:0;
   font-size:14px;
 }
-#game-create-enter{
+#game-create-enter, #game-join-enter{
   background: #428bca;
   border: #357ebd solid 0px;
   border-radius: 3px;
@@ -63,7 +79,7 @@ li {
   width:100%;
 
 }
-#game-create-enter:hover {
+#game-create-enter:hover, #game-join-enter:hover{
   background: #357ebd;
 }
 
@@ -74,5 +90,8 @@ li {
 }
 .modal-body p{
  color: #F9F0ED;
+}
+#joinButton{
+  background-color: #428bca;
 }
 
