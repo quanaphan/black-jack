@@ -107,7 +107,7 @@ var validateUser = function(userName, password, cb){
 		});
 }
 
-var addUser = function(userName, psword, nickName){
+var addUser = function(userName, psword, nickName, success, fail){
 	const MongoClient = require('mongodb').MongoClient;
 
 	// replace the uri string with your connection string.
@@ -123,15 +123,18 @@ var addUser = function(userName, psword, nickName){
 			collection.find({username: userName}, (function(err, result){
 				if(err){
 					console.log("error in find");
+					fail();
 				}else if(result != null){
-					console.log("success find function");
 					console.log("username already exists");
+					fail();
 				}else{
 					collection.insertOne({username: userName, password: psword, nickname: nickName, wins: 0, loses: 0}, function(err, result){
 						if(err){
 							console.log("error adding user");
+							fail();
 						}else{
 							console.log("success");
+							success();
 						}
 					});
 				}
