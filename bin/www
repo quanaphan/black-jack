@@ -257,6 +257,7 @@ lobby.on('connection', function(socket){
 
   //requesting to join a room
   socket.on('join room', function(id){
+    console.log(JSON.stringify(game_sessions, null, 2));
     //check if room is not full
     if(game_sessions[id]['capacity'] != max_session_capacity){
       //increase capacity
