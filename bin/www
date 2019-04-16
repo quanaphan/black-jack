@@ -141,12 +141,12 @@ var load_user = function(key, cb){
 }
 
 var update_nick = function(key, nickname){
-  database.setUserNickname(key, nickname, function(){});
+  database.setUserNickname(key, nickname);
   player_sessions[key]['nickname'] =  nickname;
 }
 
 var update_balance = function(key, balance){
-  database.setUserBalance(key, balance, function(){});
+  database.setUserBalance(key, balance);
   player_sessions[key]['balance'] = balance;
 }
 
@@ -234,6 +234,7 @@ lobby.on('connection', function(socket){
   }
 
   console.log('connected');
+  var connected_session = -1;
 
   //requesting a lobby list refresh
   socket.on('refresh', function(){
@@ -272,9 +273,13 @@ lobby.on('connection', function(socket){
     }
   })
 
+  socket.on('leave room', function(){
+    // do something
+  })
+
   socket.on('disconenct', function(){
     // do something
-    console.log('disconnect from lobby by ' + username);
+    console.log('disconnect');
   })
 })
 
@@ -344,11 +349,6 @@ function dealCard(session){
   }
 }
 
-function removeFromGame(session, username){
-
-}
-
-
 /***************************************************************************************************
  * Game session logic
  */
@@ -383,12 +383,6 @@ game.on('connection', function(socket){
   }else{
     //redirect back to login
   }
-  socket.on('disconnect', function(){
-    // remove user from game session
-    removeFromGame(session, username, function(){
-
-    })
-  })
   // TODO - get nickname here
   
   /**
