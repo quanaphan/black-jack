@@ -166,10 +166,9 @@ login.on('connection', function(socket){
     if(socket_cookie){
       if (socket_cookie['authorized']) {
         //add to player list & redirect
-        load_user(socket_cookie['username'], function(){
-          // redirect to lobby
-          socket.emit('login success');
-        });
+        // redirect to lobby
+        socket.emit('login success');
+        
       }
     }
   }
@@ -181,10 +180,9 @@ login.on('connection', function(socket){
       console.log('result = ' + result);
       if (result){
         // success, load user from DB and emit success msg
-        load_user(username, function(){
-          console.log('login success');
-          socket.emit('login success');
-        });
+        console.log('login success');
+        socket.emit('login success');
+        
       } else{
         // failed, emit failure msg
         console.log('login failure');
