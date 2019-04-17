@@ -95,7 +95,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		roomID = $('#room-number-existing').val();
 		if(gameSessions.hasOwnProperty(roomID)){
-			if(!gameSessions[i]['in-match']){
+			if(!gameSessions[roomID]['in-match']){
 				joinRoom(roomID);
 			}
 		}

@@ -97,25 +97,18 @@ function initialDeal(session) {
     if (session['capacity'] === 1) {
         var mainPlayer = session['p1'];
         mainPlayerHand = session['players'][mainPlayer]['hand'];
-        session['turn'] = 'p1';
         setTimeout(function () {
             $("#main-user-placeholder").remove();
             dealCardAnimation(mainPlayerHand, mainPlayerArea, 0, session);
-            session['turn'] = 'dealer';
-
         }, 500);
         setTimeout(function () {
             dealCardAnimation(dealerHand, dealerPlayerArea, 0, session);
-            session['turn'] = 'p1';
         }, 1000);
         setTimeout(function () {
             dealCardAnimation(mainPlayerHand, mainPlayerArea, 1, session);
-            session['turn'] = 'dealer';
-
         }, 1500);
         setTimeout(function () {
             dealCardAnimation(dealerHand, dealerPlayerArea, 1, session);
-            session['turn'] = 'p1'
         }, 2000);
 
     } else if (session['capacity'] === 2) {
@@ -123,33 +116,25 @@ function initialDeal(session) {
         var p1 = session['p2'];
         mainPlayerHand = session['players'][mainPlayer]['hand'];
         player1Hand = session['players'][p1]['hand'];
-        session['turn'] = 'p2';
         setTimeout(function () {
             $("#player1-placeholder").remove();
             dealCardAnimation(player1Hand, player1Area, 0, session);
-            session['turn'] = 'p1'
         }, 500);
         setTimeout(function () {
             $("#main-user-placeholder").remove();
             dealCardAnimation(mainPlayerHand, mainPlayerArea, 0, session);
-            session['turn'] = 'dealer'
         }, 1000);
         setTimeout(function () {
             dealCardAnimation(dealerHand, dealerPlayerArea, 0, session);
-            session['turn'] = 'p2'
-
         }, 1500);
         setTimeout(function () {
             dealCardAnimation(player1Hand, player1Area, 1, session);
-            session['turn'] = 'p1'
         }, 2000);
         setTimeout(function () {
             dealCardAnimation(mainPlayerHand, mainPlayerArea, 1, session);
-            session['turn'] = 'dealer'
         }, 2500);
         setTimeout(function () {
             dealCardAnimation(dealerHand, dealerPlayerArea, 1, session);
-            session['turn'] = 'p2'
         }, 3000);
 
     } else if (session['capacity'] === 3) {
@@ -158,43 +143,34 @@ function initialDeal(session) {
         var p2 = session['p3'];
         mainPlayerHand = session['players'][mainPlayer]['hand'];
         player1Hand = session['players'][p2]['hand'];
-        session['turn'] = 'p2';
         setTimeout(function () {
             $("#player1-placeholder").remove();
             dealCardAnimation(player1Hand, player1Area, 0,session);
-            session['turn'] = 'p1'
         }, 500);
 
         setTimeout(function () {
             $("#main-user-placeholder").remove();
             dealCardAnimation(mainPlayerHand, mainPlayerArea, 0, session);
-            session['turn'] = 'p3'
         }, 1500);
 
         setTimeout(function () {
             $("#player2-placeholder").remove();
             dealCardAnimation(player2Hand, player2Area, 0, session);
-            session['turn'] = 'dealer'
         }, 2000);
         setTimeout(function () {
             dealCardAnimation(dealerHand, dealerPlayerArea, 0, session);
-            session['turn'] = 'p2'
         }, 2500);
         setTimeout(function () {
             dealCardAnimation(player1Hand, player1Area, 0, session);
-            session['turn'] = 'p1'
         }, 3000);
         setTimeout(function () {
             dealCardAnimation(mainPlayerHand, mainPlayerArea, 0, session);
-            session['turn'] = 'p3'
         }, 3500);
         setTimeout(function () {
             dealCardAnimation(player2Hand, player2Area, 0, session);
-            session['turn'] = 'dealer'
         }, 4000);
         setTimeout(function () {
             dealCardAnimation(dealerHand, dealerPlayerArea, 0, session);
-            session['turn'] = 'p2'
         }, 4500);
     }
 }

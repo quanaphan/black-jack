@@ -162,6 +162,7 @@ $(document).ready(function () {
     // order of players can be found with ['p1'], ['p2'], ['p3'], dealer go last
     socket.on('init card distribution', function (session_info) {
         session = JSON.parse(session_info);
+        console.log(player['username']);
         let mainPlayer = session['p1'];
         mainPlayerHand = session['players'][mainPlayer]['hand'];
         dealerHand = session['dealer']['hand'];
@@ -171,6 +172,8 @@ $(document).ready(function () {
             player1 = session['p2'];
             player1Hand = session['players'][player1]['hand'];
         }else{
+            player1 = session['p2'];
+            player1Hand = session['players'][player1]['hand'];
             player2 = session['p3'];
             player2Hand = session['players'][player2]['hand'];
         }
@@ -183,6 +186,10 @@ $(document).ready(function () {
 
         let turn = session['turn'];
         let username = session[turn];
+
+        console.log(session['turn']);
+        console.log(username);
+        console.log(player['username']);
 
         showAlert("Place Your Bets");
         startLockInTimer();
@@ -199,9 +206,19 @@ $(document).ready(function () {
 
         $("#stand-button").click(function () {
             socket.emit('pass');
+            disableAllButtons();
         });
 
     });
+
+    // $("#hit-button").click(function () {
+    //     socket.emit('card deal');
+    // })
+
+    // $("#stand-button").click(function () {
+    //     socket.emit('pass');
+    //     disableAllButtons();
+    // });
 
     // actual game memes now
 
@@ -236,16 +253,20 @@ $(document).ready(function () {
             location = $("#dealer");
         }
 
+        if(hand.length === 5){
+            disableButton('#hit-button');
+        }
+
         // do some animation
         dealCardAnimationSingle(hand, location, new_card, session);
 
-        $("#hit-button").click(function () {
-            socket.emit('card deal');
-        })
+        // $("#hit-button").click(function () {
+        //     socket.emit('card deal');
+        // })
 
-        $("#stand-button").click(function () {
-            socket.emit('pass');
-        });
+        // $("#stand-button").click(function () {
+        //     socket.emit('pass');
+        // });
     });
     // emit 'pass' to pass their turn (on button press or something), same lock out condition as card deal
     //socket.emit('pass');
@@ -260,6 +281,8 @@ $(document).ready(function () {
 
         if (currPlayer === player['username']) {
             enableAllButtons();
+        }else if(turn === 'dealer'){
+            socket.emit('taly score');
         }
         //session updated with correct turn
         // do something, turn on the GUI if turn = you
