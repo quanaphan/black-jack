@@ -2,12 +2,12 @@
 let playerTurn;
 let currentTurn = 1;
 */
-/*
+
 let mainPlayerHand = [];
 let dealerHand = [];
 let player1Hand = [];
 let player2Hand = [];
-*/
+
 let dealerTotal = 0;
 let mainPlayerTotal = 0;
 let player1Total = 0;
@@ -26,6 +26,7 @@ function dealCardAnimationSingle(hand, location, card, session){
 
     let cardImage = $("<img>").attr("class", "card").attr("src", "images/" + card.src).hide();
     cardImage.attr("id", session['turn'] + "-card-" + hand.length);
+    var index = hand.length;
 
     if (index === 0) {
         cardImage.appendTo($(location)).show();
@@ -53,7 +54,7 @@ function dealCardAnimation(hand, location, index, session) {
     // Create card image for card, hide initially so it doesn't impact transition
     let cardImage = $("<img>").attr("class", "card").attr("src", "images/" + hand[index].src).hide();
     cardImage.attr("id", session['turn'] + "-card-" + index);
-
+    var index = hand.length;
 
     // To create stacked card effect
     if (index === 0) {
@@ -92,8 +93,10 @@ function initialDeal(session) {
     let player1Area = $("#player1");
     let player2Area = $("#player2");
 
-
+    dealerHand = session['dealer']['hand'];
     if (session['capacity'] === 1) {
+        var mainPlayer = session['p1'];
+        mainPlayerHand = session['players'][mainPlayer]['hand'];
         session['turn'] = 'p1';
         setTimeout(function () {
             $("#main-user-placeholder").remove();
@@ -116,7 +119,10 @@ function initialDeal(session) {
         }, 2000);
 
     } else if (session['capacity'] === 2) {
-
+        var mainPlayer = session['p1'];
+        var p1 = session['p2'];
+        mainPlayerHand = session['players'][mainPlayer]['hand'];
+        player1Hand = session['players'][p1]['hand'];
         session['turn'] = 'p2';
         setTimeout(function () {
             $("#player1-placeholder").remove();
@@ -147,7 +153,11 @@ function initialDeal(session) {
         }, 3000);
 
     } else if (session['capacity'] === 3) {
-
+        var mainPlayer = session['p1'];
+        var p1 = session['p2'];
+        var p2 = session['p3'];
+        mainPlayerHand = session['players'][mainPlayer]['hand'];
+        player1Hand = session['players'][p2]['hand'];
         session['turn'] = 'p2';
         setTimeout(function () {
             $("#player1-placeholder").remove();
