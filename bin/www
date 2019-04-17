@@ -59,6 +59,7 @@ var populate_game_sessions = function(start,end){
     game_sessions[key]['dealer'] = {};
     game_sessions[key]['dealer']['hand'] = [];
     game_sessions[key]['active'] = false;
+    game_sessions[key]['in-match'] =  false;
     game_sessions[key]['capacity'] = 0;
     game_sessions[key]['id'] = key;
   }
@@ -77,6 +78,7 @@ var reset_session = function(session){
     session['players'] = {};
     session['dealer']['hand'] = [];
     session['active'] = false;
+    session['in-match'] =  false;
     session['capacity'] = 0;
 }
 
@@ -108,13 +110,6 @@ var create_session = function(id, title, username){
   game_sessions[id]['active'] = true;
   game_sessions[id]['deck'] = [...cards];
 }
-
-/**
- * shuffle deck of given game session
- */
-var shuffle_deck = function(id){
-  game_sessions[id]['deck'] = shuffle(game_sessions[id]['deck']);
-}    
 
 /**
  * Utitlities for player_sessions
@@ -322,12 +317,18 @@ account.on('connection', function(socket){
 function nextPlayer(session){
   switch(session['turn']){
     case 'p1':
-      // to player 2
-      session['turn'] = 'p2';
+      if(session['match-capacity'] > 1){
+        // to player 2
+        session['turn'] = 'p2';
+      }
+      else session['turn'] = 'dealer';
       break;
     case 'p2':
-      // to player 3
-      session['turn'] = 'p3';
+      if(session['match-capacity'] > 2){
+        // to player 3
+        session['turn'] = 'p3';
+      }
+      else session['turn'] = 'dealer';
       break;
     case 'p3':
       // to dealer
@@ -352,9 +353,17 @@ function dealCard(session){
   }
 }
 
+/**
+ * shuffle deck of given game session
+ */
+var shuffle_deck = function(session){
+  session['deck'] = shuffle(session['deck']);
+}  
+
 function removeFromGame(session, username){
   console.log(session);
   console.log(username);
+  // TODO - add mid-game penalty
   // When capacity = 1
   if(session['capacity'] === 1){
     // reset session
@@ -431,7 +440,7 @@ game.on('connection', function(socket){
           socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session))
         })
         // Shuffle, x3 in total since 3 players expected
-        shuffle_deck(sessionID);
+        shuffle_deck(session);
       }else{
         //redirect back to login
       }
@@ -465,19 +474,25 @@ game.on('connection', function(socket){
    * stay/pass
    * split
    */
-
+  ////////////////////// TODO - add something when joining mid match
   // ready to start
   socket.on('ready', function(betAmount){
-    game.to(channelname).emit('lock in', username);
     session['players'][username]['bet'] = betAmount;
+    player_sessions[username]['balance'] -= betAmount;
+    database.setUserBalance(username, player_sessions[username]['balance']);
+    game.to(channelname).emit('lock in', username, betAmount);
+    socket.emit('update balance', newAmount);
   });
 
   // when all bets are placed
   socket.on('card distribution request', function(){
     if(username === session['host']){//only the host can request
+      session['match-capacity'] =  session['capacity'];
+      session['in-match'] = true;
       // first distribution
       // loop through 2 whole cycles
-      for (var i = 0; i < 8; i++) {
+      for (var i = 0; i < ((session['match-capacity'] + 1) * 2); i++) {
+        shuffle_deck(session);
         dealCard(session);
         nextPlayer(session);
       }
@@ -488,6 +503,7 @@ game.on('connection', function(socket){
 
   // when card deal is requested
   socket.on('card deal', function(){
+    shuffle_deck(session);
     dealCard(session);
     // card dealt, to user, new session info
     game.to(channelname).emit('card dealt', username, JSON.stringify(session));
@@ -527,6 +543,7 @@ game.on('connection', function(socket){
         // turn for be dealer's at this point, printing just in case
         console.log(session['turn']);
         // draw another card
+        shuffle_deck(session);
         dealCard(session);
         // calc score again
         score = calculateHandWithAces(dealer['hand']);
@@ -538,7 +555,7 @@ game.on('connection', function(socket){
       const players = Object.keys(session['players']);
       for(var player of players){
         var score = calculateHandWithAces(session['players'][player][hand]);
-        session['player'][player]['score'] = score;
+        session['players'][player]['score'] = score;
       }
       // check against dealer score
       for(var player of players){
@@ -546,15 +563,21 @@ game.on('connection', function(socket){
 
         // check if host has chicken dinner(?)
         // declare victory/defeat (spam emit on channel)
-        if(session['player'][player]['score'] < session['dealer']['score']){
+        if(session['players'][player]['score'] < session['dealer']['score']){
           // lost
           game.to(channelname).emit('lose', player);
-        }else if (session['player'][player]['score'] === session['dealer']['score']){
+          database.updateStats(player, false);
+          player_sessions[player]['loses'] += 1;
+        }else if (session['players'][player]['score'] === session['dealer']['score']){
           // draw
           game.to(channelname).emit('draw', player);
+          // refund bet
+          
         }else{
           // win
           game.to(channelname).emit('win', player);
+          database.updateStats(player, true);
+          player_sessions[player]['wins'] += 1;
         }
         // TODO
         // also have to consider
