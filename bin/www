@@ -32,6 +32,7 @@ var io = require('socket.io')(server);
 // config + init
 var game_sessions = {};
 var player_sessions = {};
+//var session_deck = {};
 //need a player list of sort here
 var cards = require('../utilities/cards');
 var database = require('../database/db.js');
@@ -55,6 +56,8 @@ var populate_game_sessions = function(start,end){
     game_sessions[key]['host'] = "";
     game_sessions[key]['title'] = "";
     game_sessions[key]['players'] = {};
+    game_sessions[key]['dealer'] = {};
+    game_sessions[key]['dealer']['hand'] = [];
     game_sessions[key]['active'] = false;
     game_sessions[key]['capacity'] = 0;
     game_sessions[key]['id'] = key;
@@ -68,12 +71,13 @@ populate_game_sessions(0, session_capacity);
 /**
  * Reset session
  */
-var reset_session = function(key){
-    game_sessions[key]['host'] = "";
-    game_sessions[key]['title'] = "";
-    game_sessions[key]['players'] = {};
-    game_sessions[key]['active'] = false;
-    game_sessions[key]['capacity'] = 0;
+var reset_session = function(session){
+    session['host'] = "";
+    session['title'] = "";
+    session['players'] = {};
+    session['dealer']['hand'] = [];
+    session['active'] = false;
+    session['capacity'] = 0;
 }
 
 /**
@@ -100,8 +104,6 @@ var avail_session = function(){
 var create_session = function(id, title, username){
   game_sessions[id]['host'] = username;
   game_sessions[id]['title'] = title;
-  game_sessions[id]['dealer'] = {};
-  game_sessions[id]['dealer']['hand'] = [];
   game_sessions[id]['turn'] = 'p1';
   game_sessions[id]['active'] = true;
   game_sessions[id]['deck'] = [...cards];
@@ -183,7 +185,7 @@ login.on('connection', function(socket){
   })
 
   socket.on('create account', function(username, nickname, password){
-    database.addUser(username, nickname, password, function(){
+    database.addUser(username, password, nickname, function(){
       console.log('login success');
       socket.emit('login success');
     }, function(){
@@ -211,6 +213,7 @@ lobby.on('connection', function(socket){
         console.log("user connected to lobby is '" + username + "'");
         load_user(username, function(){
           console.log('Finished loading users. spamming emits')
+          console.log('username = ' + username)
           socket.emit('init', JSON.stringify(player_sessions[username]));
         });  
         // send out game lobby list
@@ -251,7 +254,6 @@ lobby.on('connection', function(socket){
 
   //requesting to join a room
   socket.on('join room', function(id){
-    console.log("Joining room, current sessions: " + JSON.stringify(game_sessions, null, 2));
     //check if room is not full
     if(game_sessions[id]['capacity'] != max_session_capacity){
       //increase capacity
@@ -263,6 +265,8 @@ lobby.on('connection', function(socket){
       game_sessions[id]['players'][username]['hand'] = [];
       var p = 'p' + game_sessions[id]['capacity'];
       game_sessions[id][p] = username;
+      console.log("Joining room, current sessions: " + JSON.stringify(game_sessions, null, 2));
+      player_sessions[username]['in-game'] = id;      
       //send ack, refresh lobby list
       lobby.emit('lobby update', JSON.stringify(game_sessions));
       socket.emit('join success')
@@ -349,10 +353,55 @@ function dealCard(session){
 }
 
 function removeFromGame(session, username){
-  delete session['players'][username];
-  var p = 'p' + capacity;
-  delete session[p];
-  session['capacity'] -= 1;
+  console.log(session);
+  console.log(username);
+  // When capacity = 1
+  if(session['capacity'] === 1){
+    // reset session
+    delete session['players'][username];
+    delete session['p1'];
+    delete session['deck'];
+    reset_session(session)
+  }else if(session['capacity'] === 2){
+    // 2 players
+    if(session['host'] === username){
+      // if host is leaving, migrating.
+      delete session['players'][username];
+      session['host'] = session['p2'];
+      session['p1'] = session['p2'];
+      session['capacity'] = 1;
+      delete session['p2'];
+    }else{
+      // not host
+      delete session['players'][username];
+      session['capacity'] = 1;
+      delete session['p2'];
+    }
+  }else if(session['capacity'] === 3){
+    // max - 3 players
+    if(session['p1'] === username){
+      // host leaving
+      delete session['players'][username];
+      session['host'] = session['p2'];
+      session['p1'] = session['p2'];
+      session['p2'] = session['p3'];
+      session['capacity'] = 2;
+      delete session['p3'];
+    }else if(session['p2'] === username){
+      // p2 leaving
+      delete session['players'][username];
+      session['p2'] = session['p3'];
+      session['capacity'] = 2;
+      delete session['p3'];
+    }else {
+      // p3 leaving
+      delete session['players'][username];
+      session['capacity'] = 2;
+      delete session['p3'];
+    }
+  }
+  // tell lobby to update list
+  lobby.emit('lobby update', JSON.stringify(game_sessions));
 }
 
 
@@ -365,16 +414,18 @@ game.on('connection', function(socket){
   var session = {};
   var channelname = '';
   // join game channel for broadcast
-  if(socket.handshake.headers.cookie == undefined){
+  if(socket.handshake.headers.cookie){
     console.log('cookies detected. checking cookies');
     var socket_cookie =  cookie.parse(socket.handshake.headers.cookie);
     console.log(socket_cookie);
     if(socket_cookie){
       if (socket_cookie['authorized']) {
         username = socket_cookie['username'];
-        sessionID = socket_cookie['sessionID'];
+        sessionID = player_sessions[username]['in-game'];
         session = game_sessions[sessionID];
         channelname = "#" + sessionID;
+        console.log('username = ' + username);
+        console.log(session);
         socket.join(channelname);
         load_user(username, function(){
           socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session))
