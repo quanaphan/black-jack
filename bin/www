@@ -484,7 +484,6 @@ game.on('connection', function(socket){
         session = game_sessions[sessionID];
         channelname = "#" + sessionID;
         socket.join(channelname);
-        session['deck'][0]['value'] = 9999999999;
         console.log(session['deck']);
         load_user(username, function(){
           socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session));
@@ -627,35 +626,45 @@ game.on('connection', function(socket){
 
   // game end, total up
   socket.on('tally score', function(){
+    console.log('Tally request');
     if(username === session['host']){
       // only host can request a tally
       // check if dealer has chicken dinner
       if(!checkChickenDinner(session,username,true)){
+        console.log('Dealer is not chicken dinner, calculating score')
         // dealer doesn't have chicken dinner
         // dealer's turn
         // add dealer logics here
         var dealer = session['dealer'];
         var score = calculateHandWithAces(dealer['hand']);
+        console.log('Initial score: ' + score);
         // if score is less than 17
         while(score < 17){
+          console.log('Drawing 1 more.')
           // turn for be dealer's at this point, printing just in case
           console.log(session['turn']);
           // draw another card
           shuffle_deck(session);
           dealCard(session);
+          console.log('New hand');
+          console.log(session['dealer']['hand'])
           // calc score again
           score = calculateHandWithAces(dealer['hand']);
           session['dealer']['score'] = score;
+          console.log('New score: '+ score);
         }
         // done dealer's draws, emitting update
         game.to(channelname).emit('dealer drawn', JSON.stringify(session));
         // tally up players' hand
+        console.log('Tally player hands: ')
         const players = Object.keys(session['players']);
         for(var player of players){
+          console.log('player: ' + player);
           if(!session['players'][player]['chicken dinner']){
             // only if not chicken dinner
-            var score = calculateHandWithAces(session['players'][player]['hand']);
-            session['players'][player]['score'] = score;
+            var scr = calculateHandWithAces(session['players'][player]['hand']);
+            session['players'][player]['score'] = scr;
+            console.log('player score: ' + session['players'][player]['score']);
           }          
         }
         // check if dealer is busted
@@ -663,54 +672,71 @@ game.on('connection', function(socket){
         if(score > 21) dealer_busted = true;
         // check against dealer score
         for(var player of players){
+          console.log('Determining winning of ' + player);
           // check if chicken dinner
           if(!session['players'][player]['chicken dinner']){
+            console.log('Player does not have chicken dinner');
             // if not chicken dinner
             if(!dealer_busted){
+              console.log('Dealer is not busted')
               // dealer not busted, continue as normal
               // declare victory/defeat (spam emit on channel)
               if((session['players'][player]['score'] < session['dealer']['score'])||(session['players'][player]['score'] > 21)){
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player lost.')
                 // lost
                 game.to(channelname).emit('lose', player);
                 database.updateStats(player, false);
                 player_sessions[player]['loses'] += 1;
                 session['players'][player]['bet'] = 0;
               }else if (session['players'][player]['score'] === session['dealer']['score']){
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player draw.')
                 // draw
                 game.to(channelname).emit('draw', player);
+                console.log('balance: ' + Number(player_sessions[player]['balance']) + " add " + session['players'][player]['bet']);
                 // refund bet
-                player_sessions[player]['balance'] += session['players'][player]['bet'];
+                Number(player_sessions[player]['balance']) += Number(session['players'][player]['bet']);
                 session['players'][player]['bet'] = 0;
-                database.setUserBalance(player, player_sessions[player]['balance']);
+                database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }else{
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player won.')
                 // win
                 game.to(channelname).emit('win', player);
                 database.updateStats(player, true);
                 player_sessions[player]['wins'] += 1;
                 session['players'][player]['bet'] = 0;
+                console.log('balance: ' + Number(player_sessions[player]['balance']) + " add " + session['players'][player]['bet'] * 2);
                 // payout
-                player_sessions[player]['balance'] += session['players'][player]['bet'] * 2;
-                database.setUserBalance(player, player_sessions[player]['balance']);
+                Number(player_sessions[player]['balance']) += Number(player_sessions[player]['balance']) * 2;
+                database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }
             }else{
               // dealer is busted
               // auto win unless busted
               if(session['players'][player]['score'] > 21){
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player draw (both busted).')
                 // busted, draw
                 game.to(channelname).emit('draw', player);
+                console.log('balance: ' + player_sessions[player]['balance'] + " add " + session['players'][player]['bet']);
                 // refund bet
-                player_sessions[player]['balance'] += session['players'][player]['bet'];
+                Number(player_sessions[player]['balance']) += session['players'][player]['bet'];
                 session['players'][player]['bet'] = 0;
-                database.setUserBalance(player, player_sessions[player]['balance']);
+                database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }else{
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player won.')
                 // auto win
                 game.to(channelname).emit('win', player);
                 database.updateStats(player, true);
                 player_sessions[player]['wins'] += 1;
-                session['players'][player]['bet'] = 0;
+                console.log('balance: ' + Number(player_sessions[player]['balance']) + " add " + session['players'][player]['bet'] * 2);
                 // payout
-                player_sessions[player]['balance'] += session['players'][player]['bet'] * 2;
-                database.setUserBalance(player, player_sessions[player]['balance']);
+               Number(player_sessions[player]['balance']) += session['players'][player]['bet'] * 2;
+                session['players'][player]['bet'] = 0;
+                database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }
             }
           }else{
@@ -719,10 +745,10 @@ game.on('connection', function(socket){
             game.to(channelname).emit('win', player);
             database.updateStats(player, true);
             player_sessions[player]['wins'] += 1;
-            session['players'][player]['bet'] = 0;
             // payout
-            player_sessions[player]['balance'] += session['players'][player]['bet'] * 3;
-            database.setUserBalance(player, player_sessions[player]['balance']);
+            Number(player_sessions[player]['balance']) += session['players'][player]['bet'] * 3;
+            session['players'][player]['bet'] = 0;
+            database.setUserBalance(player, Number(player_sessions[player]['balance']));
           }
         }
       }else{
@@ -805,17 +831,16 @@ function hasUnreducedAce(hand) {
  */
 function calculateHandWithAces(hand) {
     let total = calculateHandTotals(hand);
-
     while (hasUnreducedAce(hand) && total > 21) {
         for (let i = 0; i < hand.length; i++) {
             if (hand[i].name === "ace" && hand[i].value === 11) {
                 hand[i].value = 1;
-
-               break;
+                break;
             }
         }
     total = calculateHandTotals(hand);
     }
+    return total;
 }
 
 /**
