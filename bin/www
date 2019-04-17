@@ -545,6 +545,7 @@ game.on('connection', function(socket){
         dealCard(session);
         nextPlayer(session);
       }
+      console.log(session);
       // tell all to play card distribution animation
       game.to(channelname).emit('init card distribution', JSON.stringify(session));
     }
