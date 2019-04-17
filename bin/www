@@ -481,7 +481,7 @@ game.on('connection', function(socket){
     player_sessions[username]['balance'] -= betAmount;
     database.setUserBalance(username, player_sessions[username]['balance']);
     game.to(channelname).emit('lock in', username, betAmount);
-    socket.emit('update balance', newAmount);
+    socket.emit('update balance', player_sessions[username]['balance']);
   });
 
   // when all bets are placed
@@ -568,10 +568,12 @@ game.on('connection', function(socket){
           game.to(channelname).emit('lose', player);
           database.updateStats(player, false);
           player_sessions[player]['loses'] += 1;
+          session['players'][player]['bet'] = 0;
         }else if (session['players'][player]['score'] === session['dealer']['score']){
           // draw
           game.to(channelname).emit('draw', player);
           // refund bet
+          player_sessions[player]['balance'] += session['players'][player]['bet'];
           
         }else{
           // win
