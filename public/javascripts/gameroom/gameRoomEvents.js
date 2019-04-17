@@ -22,7 +22,18 @@ let player2Total = 0;
  *                  #player2 is the user on the right
  */
 function dealCardAnimationSingle(hand, location, card, session){
-
+    dealerHand = session['dealer']['hand'];
+    var mainPlayer = session['p1'];
+    mainPlayerHand = session['players'][mainPlayer]['hand'];
+    if(session['capacity'] < 3){
+        var p1 = session['p2'];
+        player1Hand = session['players'][p1]['hand'];
+    }else{
+        var p1 = session['p2'];
+        var p2 = session['p3'];
+        player1Hand = session['players'][p1]['hand'];
+        player1Hand = session['players'][p2]['hand'];
+    }
 
     let cardImage = $("<img>").attr("class", "card").attr("src", "images/" + card.src).hide();
     cardImage.attr("id", session['turn'] + "-card-" + hand.length);
@@ -201,6 +212,7 @@ function calculateHandTotals(hand) {
  * */
 
 function displayHandTotals() {
+    console.log("in diplay totals");
     dealerTotal = calculateHandTotals(dealerHand);
     mainPlayerTotal = calculateHandTotals(mainPlayerHand);
     player1Total = calculateHandTotals(player1Hand);

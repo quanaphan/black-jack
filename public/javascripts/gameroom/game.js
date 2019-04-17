@@ -195,6 +195,7 @@ $(document).ready(function () {
         startLockInTimer();
         hideAlert();
 
+        displayHandTotals();
 
         if (username === player['username']) {
             enableAllButtons();
@@ -253,17 +254,13 @@ $(document).ready(function () {
             location = $("#dealer");
         }
 
-        if(hand.length === 5){
-            disableButton('#hit-button');
-        }
-
         // do some animation
         dealCardAnimationSingle(hand, location, new_card, session);
 
         // $("#hit-button").click(function () {
         //     socket.emit('card deal');
         // })
-
+        displayHandTotals();
         // $("#stand-button").click(function () {
         //     socket.emit('pass');
         // });
@@ -278,12 +275,15 @@ $(document).ready(function () {
 
         let turn = session['turn'];
         let currPlayer = session[turn];
-
+        console.log(turn);
         if (currPlayer === player['username']) {
             enableAllButtons();
         }else if(turn === 'dealer'){
-            socket.emit('taly score');
+            console.log("im here");
+            socket.emit('tally score');
         }
+        console.log(turn);
+        console.log(currPlayer);
         //session updated with correct turn
         // do something, turn on the GUI if turn = you
     });
