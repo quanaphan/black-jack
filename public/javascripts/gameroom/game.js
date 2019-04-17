@@ -265,6 +265,18 @@ $(document).ready(function () {
         //     socket.emit('pass');
         // });
     });
+//unstable
+    // socket.on('dealer drawn', function(session_info){
+    //     session = JSON.parse(session_info);
+    //     var hand = session['players'][username]['hand'];
+    //     var location = $("#dealer");
+    //     var new_card;
+    //     for(var i = 2; i < hand.length; i++)
+        
+
+    //     dealCardAnimationSingle(hand, location, new_card, session);
+    // })
+
     // emit 'pass' to pass their turn (on button press or something), same lock out condition as card deal
     //socket.emit('pass');
 
