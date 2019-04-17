@@ -43,6 +43,10 @@ $(document).ready(function () {
          * session['capacity'] = # of people inside room atm
          * session['deck'] = cards in deck, irrelevant to client. probably.
          */
+        console.log('Received player info:');
+        console.log(player);
+        console.log('Received session info:');
+        console.log(session);
         let player1 = session['p1'];
         let player2 = session['p2'];
         let player3 = session['p3'];
@@ -58,7 +62,7 @@ $(document).ready(function () {
             $('#player2-head').text(session['players'][player3]['nickname']);
         }
         disableAllButtons();
-
+        // missing balance, probably
     });
 
     // emit 'ready' when lock-in bet
