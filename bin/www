@@ -258,9 +258,10 @@ lobby.on('connection', function(socket){
       game_sessions[id]['players'][username]['username'] = username;
       game_sessions[id]['players'][username]['nickname'] = player_sessions[username]['nickname'];
       game_sessions[id]['players'][username]['hand'] = [];
+      game_sessions[id]['players'][username]['chicken dinner'] =  false;
       var p = 'p' + game_sessions[id]['capacity'];
       game_sessions[id][p] = username;
-      console.log("Joining room, current sessions: " + JSON.stringify(game_sessions, null, 2));
+      //console.log("Joining room, current sessions: " + JSON.stringify(game_sessions, null, 2));
       player_sessions[username]['in-game'] = id;      
       //send ack, refresh lobby list
       lobby.emit('lobby update', JSON.stringify(game_sessions));
@@ -358,8 +359,6 @@ function dealCard(session){
  */
 
 var shuffle_deck = function(session){
-  console.log('session deck');
-  console.log(session['deck']);
   session['deck'] = shuffle(session['deck']);
 }  
 
@@ -416,11 +415,54 @@ function removeFromGame(session, username){
 }
 
 function newDeck(session){
-  session['deck'] = [...cards];
+  session['deck'] = JSON.parse(JSON.stringify(cards));
   for (var i = 5; i >= 0; i--) {
     shuffle_deck(session);
   }
 }
+
+function checkChickenDinner(session, username, dealer){
+  // check if the claim of chicken dinner is true
+  var hand = [];
+  if(!dealer){
+    // check for non dealer
+    hand = session['players'][username]['hand'];
+  }else{
+    // check dealer
+    hand = session['dealer']['hand'];
+  }
+  // check first card
+  // check if ACE
+  if(hand[0].name === 'ace'){
+    // if first card is ace
+    // check if 2nd card is 10/J/Q/K
+    if((hand[0].name === '10') || (hand[0].name === 'jack') || (hand[0].name === 'king') || (hand[0].name === 'queen')){
+      // is chicken dinner
+      return true;
+    }
+
+  }else if((hand[0].name === '10') || (hand[0].name === 'jack') || (hand[0].name === 'king') || (hand[0].name === 'queen')){
+    // first card is 10/J/Q/K
+    // check if 2nd card Ace
+    if (hand[0].name === 'ace') {
+      // is chicken dinner
+      return true
+    }
+  }
+  // false claim
+  return false;
+}
+
+function resetHands(session){
+  for(var i = 1; i <= session['capacity']; i++){
+    var p = 'p'+i;
+    delete session['players'][session[p]]['hand'];
+    session['players'][session[p]]['hand'] = [];
+    session['players'][session[p]]['chicken dinner'] = false;
+  }
+}
+
+
 
 /***************************************************************************************************
  * Game session logic
@@ -441,9 +483,9 @@ game.on('connection', function(socket){
         sessionID = player_sessions[username]['in-game'];
         session = game_sessions[sessionID];
         channelname = "#" + sessionID;
-        console.log('username = ' + username);
-        console.log(session);
         socket.join(channelname);
+        session['deck'][0]['value'] = 9999999999;
+        console.log(session['deck']);
         load_user(username, function(){
           socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session));
           game.to(channelname).emit('player join', JSON.stringify(session));
@@ -463,7 +505,6 @@ game.on('connection', function(socket){
     // do more clean ups
     game.to(channelname).emit('player left', username, JSON.stringify(session));
   })
-  // TODO - get nickname here
   
   /**
    * Gameflow:
@@ -494,8 +535,9 @@ game.on('connection', function(socket){
   // when all bets are placed
   socket.on('card distribution request', function(){
     if(username === session['host']){//only the host can request
-      session['match-capacity'] =  session['capacity'];
+      session['match-capacity'] = session['capacity'];
       session['in-match'] = true;
+      lobby.emit('lobby update', JSON.stringify(game_sessions));
       // first distribution
       // loop through 2 whole cycles
       for (var i = 0; i < ((session['match-capacity'] + 1) * 2); i++) {
@@ -530,71 +572,172 @@ game.on('connection', function(socket){
   })
   
   socket.on('chicken dinner', function(){
-  // do sth on chicken dinner
-  // to be considered later
-  // have to check if dealer is also black-jack -> skip to endgame logic 
-  // insurance bets, maibe?
+    // do sth on chicken dinner
+    // check chicken dinner claim
+    if(checkChickenDinner(session,username,false)){
+      // if claim is true
+      session['players'][username]['chicken dinner'] = true;
+      // check if dealer also have chicken dinner
+      if(checkChickenDinner(session,username,true)){
+        // dealer is also ChickenDinner
+        game.to(channelname).emit('chicken dinner interrupt');
+      }
+    }
   })
+
+  socket.on('chicken dinner interrupt', function(){
+    // only host can call
+    if(username === session['host']){
+      // dealer has chicken dinner
+      // check chicken dinner for all, chicken = draw, nano = lose
+      const players = Object.keys(session['players']);
+      for(var player of players){
+        // check chicken
+        if(checkChickenDinner(session, player, false)){
+          // player has chicken dinner, draw
+          game.to(channelname).emit('draw', player);
+          // refund bet
+          player_sessions[player]['balance'] += session['players'][player]['bet'];
+          session['players'][player]['bet'] = 0;
+          database.setUserBalance(player, player_sessions[player]['balance']);
+        }
+
+
+
+        game.to(channelname).emit('lose', player);
+        database.updateStats(player, false);
+        player_sessions[player]['loses'] += 1;
+        session['players'][player]['bet'] = 0;
+      }
+      // reset hands, decks, and flags post game
+      resetHands(session);
+      newDeck(session);
+      session['mid-match'] = false;
+      socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session));
+      lobby.emit('lobby update', JSON.stringify(game_sessions));
+    }
+  })
+
+
 
   // game end, total up
   socket.on('tally score', function(){
     if(username === session['host']){
       // only host can request a tally
-      
-      // dealer's turn
-      // add dealer logics here
-      var dealer = session['dealer'];
-      var score = calculateHandWithAces(dealer['hand']);
-      // if score is less than 17
-      while(score < 17){
-        // turn for be dealer's at this point, printing just in case
-        console.log(session['turn']);
-        // draw another card
-        shuffle_deck(session);
-        dealCard(session);
-        // calc score again
-        score = calculateHandWithAces(dealer['hand']);
-        session['dealer']['score'] = score;
-      }
-      // done dealer's draws, emitting update
-      game.to(channelname).emit('dealer drawn', JSON.stringify(session));
-      // tally up players' hand
-      const players = Object.keys(session['players']);
-      for(var player of players){
-        var score = calculateHandWithAces(session['players'][player][hand]);
-        session['players'][player]['score'] = score;
-      }
-      // check against dealer score
-      for(var player of players){
-        // check for chicken dinner here - TODO
-
-        // check if host has chicken dinner(?)
-        // declare victory/defeat (spam emit on channel)
-        if(session['players'][player]['score'] < session['dealer']['score']){
-          // lost
+      // check if dealer has chicken dinner
+      if(!checkChickenDinner(session,username,true)){
+        // dealer doesn't have chicken dinner
+        // dealer's turn
+        // add dealer logics here
+        var dealer = session['dealer'];
+        var score = calculateHandWithAces(dealer['hand']);
+        // if score is less than 17
+        while(score < 17){
+          // turn for be dealer's at this point, printing just in case
+          console.log(session['turn']);
+          // draw another card
+          shuffle_deck(session);
+          dealCard(session);
+          // calc score again
+          score = calculateHandWithAces(dealer['hand']);
+          session['dealer']['score'] = score;
+        }
+        // done dealer's draws, emitting update
+        game.to(channelname).emit('dealer drawn', JSON.stringify(session));
+        // tally up players' hand
+        const players = Object.keys(session['players']);
+        for(var player of players){
+          if(!session['players'][player]['chicken dinner']){
+            // only if not chicken dinner
+            var score = calculateHandWithAces(session['players'][player]['hand']);
+            session['players'][player]['score'] = score;
+          }          
+        }
+        // check if dealer is busted
+        var dealer_busted = false;
+        if(score > 21) dealer_busted = true;
+        // check against dealer score
+        for(var player of players){
+          // check if chicken dinner
+          if(!session['players'][player]['chicken dinner']){
+            // if not chicken dinner
+            if(!dealer_busted){
+              // dealer not busted, continue as normal
+              // declare victory/defeat (spam emit on channel)
+              if((session['players'][player]['score'] < session['dealer']['score'])||(session['players'][player]['score'] > 21)){
+                // lost
+                game.to(channelname).emit('lose', player);
+                database.updateStats(player, false);
+                player_sessions[player]['loses'] += 1;
+                session['players'][player]['bet'] = 0;
+              }else if (session['players'][player]['score'] === session['dealer']['score']){
+                // draw
+                game.to(channelname).emit('draw', player);
+                // refund bet
+                player_sessions[player]['balance'] += session['players'][player]['bet'];
+                session['players'][player]['bet'] = 0;
+                database.setUserBalance(player, player_sessions[player]['balance']);
+              }else{
+                // win
+                game.to(channelname).emit('win', player);
+                database.updateStats(player, true);
+                player_sessions[player]['wins'] += 1;
+                session['players'][player]['bet'] = 0;
+                // payout
+                player_sessions[player]['balance'] += session['players'][player]['bet'] * 2;
+                database.setUserBalance(player, player_sessions[player]['balance']);
+              }
+            }else{
+              // dealer is busted
+              // auto win unless busted
+              if(session['players'][player]['score'] > 21){
+                // busted, draw
+                game.to(channelname).emit('draw', player);
+                // refund bet
+                player_sessions[player]['balance'] += session['players'][player]['bet'];
+                session['players'][player]['bet'] = 0;
+                database.setUserBalance(player, player_sessions[player]['balance']);
+              }else{
+                // auto win
+                game.to(channelname).emit('win', player);
+                database.updateStats(player, true);
+                player_sessions[player]['wins'] += 1;
+                session['players'][player]['bet'] = 0;
+                // payout
+                player_sessions[player]['balance'] += session['players'][player]['bet'] * 2;
+                database.setUserBalance(player, player_sessions[player]['balance']);
+              }
+            }
+          }else{
+            // is chicken dinner, arrive here if dealer != chicken dinner
+            // win 2x
+            game.to(channelname).emit('win', player);
+            database.updateStats(player, true);
+            player_sessions[player]['wins'] += 1;
+            session['players'][player]['bet'] = 0;
+            // payout
+            player_sessions[player]['balance'] += session['players'][player]['bet'] * 3;
+            database.setUserBalance(player, player_sessions[player]['balance']);
+          }
+        }
+      }else{
+        // dealer has chicken dinner
+        // will arrive here if and only if dealer has chicken dinner && 0 player has chicken dinner
+        // everyone lost, doom to the people
+        const players = Object.keys(session['players']);
+        for(var player of players){
           game.to(channelname).emit('lose', player);
           database.updateStats(player, false);
           player_sessions[player]['loses'] += 1;
           session['players'][player]['bet'] = 0;
-        }else if (session['players'][player]['score'] === session['dealer']['score']){
-          // draw
-          game.to(channelname).emit('draw', player);
-          // refund bet
-          player_sessions[player]['balance'] += session['players'][player]['bet'];
-          database.setUserBalance(player, player_sessions[player]['balance']);
-        }else{
-          // win
-          game.to(channelname).emit('win', player);
-          database.updateStats(player, true);
-          player_sessions[player]['wins'] += 1;
-          // payout
-          player_sessions[player]['balance'] += session['players'][player]['bet'] * 2;
-          database.setUserBalance(player, player_sessions[player]['balance']);
         }
-        // TODO
-        // new deck + shuffle
-        // get out of mid-match state
       }
+      // reset hands, decks, and flags post game
+      resetHands(session);
+      newDeck(session);
+      session['mid-match'] = false;
+      socket.emit('init', JSON.stringify(player_sessions[username]), JSON.stringify(session));
+      lobby.emit('lobby update', JSON.stringify(game_sessions));
     }
   });
 })
@@ -606,13 +749,6 @@ io.on('connection', function(socket){
 
   })
 })
-
-
-
-
-
-
-
 
 /**
  * Listen on provided port, on all network interfaces.

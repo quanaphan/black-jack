@@ -34,7 +34,14 @@ $(document).ready(function() {
 		var i;
 		for (i = 0; i < count; i++) {
 			if (gameSessions[i]['active']) {
-				$('#gamerooms').append("<li>" + "Room #" + gameSessions[i]['id'] + " \"" + gameSessions[i]['title'] + "\" " + gameSessions[i]['capacity'] + "/3" + "</li>");
+				if(gameSessions[i]['in-match']){
+					// already in game
+					$('#gamerooms').append("<li>" + "Room #" + gameSessions[i]['id'] + " \"" + gameSessions[i]['title'] + "\" " + gameSessions[i]['capacity'] + "/3" + "  Playing</li>");
+				}else{
+					// waiting for others to join
+					$('#gamerooms').append("<li>" + "Room #" + gameSessions[i]['id'] + " \"" + gameSessions[i]['title'] + "\" " + gameSessions[i]['capacity'] + "/3" + "  Waiting</li>");
+				}
+				
 			}
 		}
 
@@ -86,7 +93,12 @@ $(document).ready(function() {
 
 	$('#game-join-enter').click(function(){
 		event.preventDefault();
-		joinRoom($('#room-number-existing').val());
+		roomID = $('#room-number-existing').val();
+		if(gameSessions.hasOwnProperty(roomID)){
+			if(!gameSessions[i]['in-match']){
+				joinRoom(roomID);
+			}
+		}
 	});
 
 	function joinRoom(roomNumber){
