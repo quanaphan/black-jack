@@ -650,7 +650,6 @@ game.on('connection', function(socket){
           console.log(session['dealer']['hand'])
           // calc score again
           score = calculateHandWithAces(dealer['hand']);
-          session['dealer']['score'] = score;
           console.log('New score: '+ score);
         }
         // done dealer's draws, emitting update
