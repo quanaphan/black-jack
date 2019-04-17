@@ -1,35 +1,3 @@
-/*const MongoClient = require('mongodb').MongoClient;
-	// replace the uri string with your connection string.
-	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
-	MongoClient.connect(uri, function(err, client) {
-		if(err) {
-			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
-		}else{
-   
-			console.log('Connected...');
-			const db = client.db("Blackjack");
-			const collection = db.collection("Users");
-			collection.findOne({username: "test2"}, (function(err, result){
-				if(err){
-					console.log("error in find");
-				}else if(result != null){
-					console.log("success find function");
-					console.log("username already exists");
-				}else{
-					collection.insertOne({username: "newUser"}, function(err, result){
-						if(err){
-							console.log("error adding user");
-						}else{
-							console.log("success");
-						}
-					});
-				}
-			}));
-		}
-	});*/
-
-
-
 var connectToDatabase = function(){
 	const MongoClient = require('mongodb').MongoClient;
 	// replace the uri string with your connection string.
@@ -92,19 +60,8 @@ var validateUser = function(userName, password, cb){
 				}
 			}));
 			client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
-			}
-		});
+		}
+	});
 }
 
 var addUser = function(userName, psword, nickName, success, fail){
@@ -139,20 +96,8 @@ var addUser = function(userName, psword, nickName, success, fail){
 					});
 				}
 			}));
-			//client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
-			}
-		});
+		}
+	});
 	
 }
 
@@ -180,19 +125,8 @@ var getUserNickname = function(userName, cb){
 				}
 			}));
 			client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
-			}
-		});
+		}
+	});
 }
 
 var getUserBalance = function(userName, cb){
@@ -219,19 +153,8 @@ var getUserBalance = function(userName, cb){
 				}
 			}));
 			client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
-			}
-		});
+		}
+	});
 }
 
 var setUserNickname = function(userName, nickName){
@@ -257,19 +180,8 @@ var setUserNickname = function(userName, nickName){
 				}
 			}));
 			client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
-			}
-		});
+		}
+	});
 }
 
 var setUserBalance = function(userName, newBalance){
@@ -295,19 +207,8 @@ var setUserBalance = function(userName, newBalance){
 				}
 			}));
 			client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
-			}
-		});
+		}
+	});
 }
 
 var getTopUsers = function(cb){
@@ -324,31 +225,20 @@ var getTopUsers = function(cb){
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
 			var sort = { balance: -1 };
-			collection.find().sort(sort).toArray((function(err, result){
+			collection.find().project({_id: 0, nickname: 1, balance: 1}).sort(sort).toArray((function(err, result){
 				if(err){
 					console.log("error in find");
 				}else if(result != null){
 					console.log("success find function");
-					//console.log(result[0].nickname);
+					console.log(result);
 					cb(result);
 				}else{
 					console.log("no users found");
 				}
 			}));
 			client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
-			}
-		});
+		}
+	});
 }
 
 var getUserInfo = function(userName, cb){
@@ -364,7 +254,7 @@ var getUserInfo = function(userName, cb){
 			console.log('Connected...Getting nickname');
 			const db = client.db("Blackjack");
 			const collection = db.collection("Users");
-			collection.findOne({username: userName}, (function(err, result){
+			collection.findOne({username: userName}, {projection: {nickname: 1, balance: 1, wins: 1, loses: 1}},(function(err, result){
 				if(err){
 					console.log("error in find");
 				}else if(result != null){
@@ -375,19 +265,39 @@ var getUserInfo = function(userName, cb){
 				}
 			}));
 			client.close();
-			//collection.insertOne( {username: "poop", password: "wtfisthis"});
-			//var query = { username: "poop" };
-			//var newval = { $set: {balance: 500 }};
-			//collection.updateOne(query, newval, function(err, res){
-			//	if(err){
-			//		console.log("error");
-			//	}else{
-			//		console.log("success");
-			//	}
-				// perform actions on the collection object
-				//client.close();
+		}
+	});
+}
+
+var updateStats = function(userName, isWin){
+	const MongoClient = require('mongodb').MongoClient;
+
+	// replace the uri string with your connection string.
+	const uri = "mongodb+srv://CarlosHz:BlackjackSeng513@blackjack-2j9ms.mongodb.net/test?retryWrites=true";
+	MongoClient.connect(uri, function(err, client) {
+		if(err) {
+			console.log('Error occurred while connecting to MongoDB Atlas...\n',err.stack);
+		}else{
+			console.log('Connected...Getting nickname');
+			const db = client.db("Blackjack");
+			const collection = db.collection("Users");
+			var query = { username: userName};
+			var stat;
+			if(isWin){
+				stat = {$inc: {wins: 1}};
+			}else{
+				stat = {$inc: {loses: 1}};
 			}
-		});
+			collection.updateOne(query, stat, (function(err, result){
+				if(err){
+					console.log("error when trying to update");
+				}else{
+					console.log("succesfully updated stats");
+				}
+			}));
+			client.close();
+		}
+	});
 }
 
 module.exports = {

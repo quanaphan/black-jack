@@ -114,6 +114,7 @@ $(document).ready(function() {
 			cap = length;
 		}
 		for(i = 0; i < cap; i++){
+			$('#leaders').empty();
 			$('#leaders').append($('<li>').text((i+1) + ". " + leaderboard[i].nickname + " - $" + leaderboard[i].balance));
 		}
 	});
