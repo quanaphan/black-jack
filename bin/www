@@ -696,7 +696,7 @@ game.on('connection', function(socket){
                 game.to(channelname).emit('draw', player);
                 console.log('balance: ' + Number(player_sessions[player]['balance']) + " add " + session['players'][player]['bet']);
                 // refund bet
-                Number(player_sessions[player]['balance']) += Number(session['players'][player]['bet']);
+                player_sessions[player]['balance'] += Number(session['players'][player]['bet']);
                 session['players'][player]['bet'] = 0;
                 database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }else{
@@ -709,7 +709,7 @@ game.on('connection', function(socket){
                 session['players'][player]['bet'] = 0;
                 console.log('balance: ' + Number(player_sessions[player]['balance']) + " add " + session['players'][player]['bet'] * 2);
                 // payout
-                Number(player_sessions[player]['balance']) += Number(player_sessions[player]['balance']) * 2;
+                player_sessions[player]['balance'] += Number(player_sessions[player]['balance']) * 2;
                 database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }
             }else{
@@ -722,7 +722,7 @@ game.on('connection', function(socket){
                 game.to(channelname).emit('draw', player);
                 console.log('balance: ' + player_sessions[player]['balance'] + " add " + session['players'][player]['bet']);
                 // refund bet
-                Number(player_sessions[player]['balance']) += session['players'][player]['bet'];
+                player_sessions[player]['balance'] += session['players'][player]['bet'];
                 session['players'][player]['bet'] = 0;
                 database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }else{
@@ -734,7 +734,7 @@ game.on('connection', function(socket){
                 player_sessions[player]['wins'] += 1;
                 console.log('balance: ' + Number(player_sessions[player]['balance']) + " add " + session['players'][player]['bet'] * 2);
                 // payout
-               Number(player_sessions[player]['balance']) += session['players'][player]['bet'] * 2;
+               player_sessions[player]['balance'] += session['players'][player]['bet'] * 2;
                 session['players'][player]['bet'] = 0;
                 database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }
@@ -746,7 +746,7 @@ game.on('connection', function(socket){
             database.updateStats(player, true);
             player_sessions[player]['wins'] += 1;
             // payout
-            Number(player_sessions[player]['balance']) += session['players'][player]['bet'] * 3;
+            player_sessions[player]['balance'] += session['players'][player]['bet'] * 3;
             session['players'][player]['bet'] = 0;
             database.setUserBalance(player, Number(player_sessions[player]['balance']));
           }

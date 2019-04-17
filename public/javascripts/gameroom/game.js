@@ -72,7 +72,7 @@ $(document).ready(function () {
             }else{
                 $('#wager-input').val("");
                 disableButton('#lock-bet');
-                socket.emit('ready', betVal); 
+                socket.emit('ready', Number(betVal)); 
             }
         }else{
             alert("You don't have that much in your balance!");
