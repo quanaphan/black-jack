@@ -308,7 +308,8 @@ module.exports = {
 	addUser,
 	validateUser,
 	getUserInfo,
-	getTopUsers 
+	getTopUsers,
+	updateStats
 }
 
 
