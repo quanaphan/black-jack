@@ -681,16 +681,16 @@ game.on('connection', function(socket){
               console.log('Dealer is not busted')
               // dealer not busted, continue as normal
               // declare victory/defeat (spam emit on channel)
-              if((session['players'][player]['score'] < session['dealer']['score'])||(session['players'][player]['score'] > 21)){
-                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+              if((session['players'][player]['score'] < score)||(session['players'][player]['score'] > 21)){
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + score);
                 console.log('player lost.')
                 // lost
                 game.to(channelname).emit('lose', player);
                 database.updateStats(player, false);
                 player_sessions[player]['loses'] += 1;
                 session['players'][player]['bet'] = 0;
-              }else if (session['players'][player]['score'] === session['dealer']['score']){
-                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+              }else if (session['players'][player]['score'] === score){
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + score);
                 console.log('player draw.')
                 // draw
                 game.to(channelname).emit('draw', player);
@@ -700,7 +700,7 @@ game.on('connection', function(socket){
                 session['players'][player]['bet'] = 0;
                 database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }else{
-                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + score);
                 console.log('player won.')
                 // win
                 game.to(channelname).emit('win', player);
@@ -716,7 +716,7 @@ game.on('connection', function(socket){
               // dealer is busted
               // auto win unless busted
               if(session['players'][player]['score'] > 21){
-                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + score);
                 console.log('player draw (both busted).')
                 // busted, draw
                 game.to(channelname).emit('draw', player);
@@ -726,7 +726,7 @@ game.on('connection', function(socket){
                 session['players'][player]['bet'] = 0;
                 database.setUserBalance(player, Number(player_sessions[player]['balance']));
               }else{
-                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + session['dealer']['score']);
+                console.log('player vs dealer: ' + session['players'][player]['score'] + " vs " + score);
                 console.log('player won.')
                 // auto win
                 game.to(channelname).emit('win', player);
