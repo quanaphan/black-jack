@@ -535,6 +535,9 @@ game.on('connection', function(socket){
   // when all bets are placed
   socket.on('card distribution request', function(){
     if(username === session['host']){//only the host can request
+      console.log('Card distribution request');
+      console.log(username);
+      console.log(session['host']);
       session['match-capacity'] = session['capacity'];
       session['in-match'] = true;
       lobby.emit('lobby update', JSON.stringify(game_sessions));
@@ -545,6 +548,7 @@ game.on('connection', function(socket){
         dealCard(session);
         nextPlayer(session);
       }
+      console.log('post distribution: ')
       console.log(session);
       // tell all to play card distribution animation
       game.to(channelname).emit('init card distribution', JSON.stringify(session));
