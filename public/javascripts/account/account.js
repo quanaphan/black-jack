@@ -21,7 +21,6 @@ $(document).ready(function(){
 		$('#wins').text("Wins: " + player['wins']);
 		$('#loses').text("Loses: " + player['loses']);
 		$('#winp').text("Win %: " + percentage.toFixed(2) + "%");
-		$('#rank').text("Rank: ");
 	});
 
 	var leaderboard = {};
@@ -30,7 +29,7 @@ $(document).ready(function(){
 		var i;
 		var length = leaderboard.length;	//if we want more than 3 to show
 		for(i = 0; i < length; i++){
-			if(leaderboard[i].username === player['username']){
+			if(leaderboard[i].nickname === player['nickname']){
 				$('#rank').text("Rank: " + (i+1));
 			}
 		}

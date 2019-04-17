@@ -113,8 +113,8 @@ $(document).ready(function() {
 		if(length < cap){
 			cap = length;
 		}
+		$('#leaders').empty();
 		for(i = 0; i < cap; i++){
-			$('#leaders').empty();
 			$('#leaders').append($('<li>').text((i+1) + ". " + leaderboard[i].nickname + " - $" + leaderboard[i].balance));
 		}
 	});
